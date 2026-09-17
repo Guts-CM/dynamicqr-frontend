@@ -1,1 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+
+@theme {
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-heading: Poppins, ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme static {
+  --color-limed-spruce-50: #f9fbfb;
+  --color-limed-spruce-100: #f3f5f6;
+  --color-limed-spruce-200: #e6e9ea;
+  --color-limed-spruce-300: #d3d8d9;
+  --color-limed-spruce-400: #9faaac;
+  --color-limed-spruce-500: #6e7a7d;
+  --color-limed-spruce-600: #4f5d5f;
+  --color-limed-spruce-700: #405053;
+  --color-limed-spruce-800: #233133;
+  --color-limed-spruce-900: #152023;
+  --color-limed-spruce-950: #050d10;
+  --color-accent: var(--color-limed-spruce-50);
+  --color-accent-foreground: var(--color-limed-spruce-950);
+}
+
+@layer base {
+  html {
+    @apply font-sans antialiased bg-limed-spruce-950 text-limed-spruce-50;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+}

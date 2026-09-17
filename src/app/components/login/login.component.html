@@ -1,0 +1,141 @@
+<section class="login-page" aria-labelledby="login-title">
+  <div class="login-atmosphere" aria-hidden="true">
+    <span class="login-streak login-streak--one"></span>
+    <span class="login-streak login-streak--two"></span>
+    <span class="login-streak login-streak--three"></span>
+    <span class="login-glow login-glow--left"></span>
+    <span class="login-glow login-glow--right"></span>
+  </div>
+
+  <div class="login-layout">
+    <aside class="login-visual">
+      <app-qr-stage />
+    </aside>
+
+    <div class="login-stage">
+    <div class="glass-ornament glass-ornament--tl" aria-hidden="true"></div>
+    <div class="glass-ornament glass-ornament--br" aria-hidden="true"></div>
+
+    <article class="login-card">
+      <header class="login-header">
+        <h1 id="login-title" class="login-title">
+          Bienvenido de <span>nuevo</span>
+        </h1>
+        <p class="login-subtitle">
+          Ingresa tus credenciales para acceder a tu cuenta segura
+        </p>
+      </header>
+
+      <form class="login-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="field">
+          <label class="field-label" for="email">Correo electrónico</label>
+          <div class="field-control">
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" />
+                <path d="m4.5 7.5 7.5 6 7.5-6" />
+              </svg>
+            </span>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="nombre@dominio.com"
+              [attr.aria-invalid]="submitted() && form.controls.email.invalid"
+              [attr.aria-describedby]="submitted() && form.controls.email.invalid ? 'email-error' : null"
+            />
+          </div>
+          @if (submitted() && form.controls.email.invalid) {
+            <p id="email-error" class="field-error" role="alert">Ingresa un correo electrónico válido.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="password">Contraseña</label>
+          <div class="field-control">
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="5" y="11" width="14" height="9" rx="2" />
+                <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+              </svg>
+            </span>
+            <input
+              id="password"
+              [type]="passwordVisible() ? 'text' : 'password'"
+              formControlName="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              [attr.aria-invalid]="submitted() && form.controls.password.invalid"
+              [attr.aria-describedby]="submitted() && form.controls.password.invalid ? 'password-error' : null"
+            />
+            <button
+              type="button"
+              class="field-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-pressed]="passwordVisible()"
+              [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              @if (passwordVisible()) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M3 3l18 18" />
+                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                  <path d="M9.9 5.2A10.5 10.5 0 0 1 12 5c5.5 0 9.5 4.5 10.5 7-.3.7-1 1.9-2.1 3.2" />
+                  <path d="M6.1 6.1C4.2 7.5 2.9 9.3 1.5 12c1 2.5 5 7 10.5 7 1.3 0 2.5-.2 3.6-.6" />
+                </svg>
+              } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              }
+            </button>
+          </div>
+          @if (submitted() && form.controls.password.invalid) {
+            <p id="password-error" class="field-error" role="alert">La contraseña debe tener al menos 8 caracteres.</p>
+          }
+        </div>
+
+        <div class="login-options">
+          <label class="remember">
+            <input type="checkbox" formControlName="rememberMe" />
+            Recuérdame
+          </label>
+
+          <a class="text-link" routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          Iniciar sesión
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14" stroke-linecap="round" />
+            <path d="m13 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </form>
+
+      <div class="login-divider" role="separator">
+        <span>O CONTINÚA CON</span>
+      </div>
+
+      <div class="social-row">
+        <button type="button" class="btn-social">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M21.6 12.23c0-.74-.07-1.45-.19-2.13H12v4.04h5.4a4.62 4.62 0 0 1-2 3.03v2.5h3.24c1.9-1.75 2.96-4.33 2.96-7.44Z" />
+            <path fill="currentColor" d="M12 22c2.7 0 4.96-.9 6.61-2.33l-3.24-2.5c-.9.6-2.05.96-3.37.96-2.59 0-4.78-1.75-5.56-4.1H3.09v2.58A10 10 0 0 0 12 22Z" />
+            <path fill="currentColor" d="M6.44 13.03A6.01 6.01 0 0 1 6.13 12c0-.36.06-.71.16-1.03V8.39H3.09A10 10 0 0 0 2 12c0 1.61.39 3.14 1.09 4.47l3.35-3.44Z" />
+            <path fill="currentColor" d="M12 5.87c1.47 0 2.79.5 3.83 1.5l2.87-2.87C16.95 2.89 14.7 2 12 2A10 10 0 0 0 3.09 8.39l3.35 2.58C7.22 7.62 9.41 5.87 12 5.87Z" />
+          </svg>
+          Continuar con Google
+        </button>
+      </div>
+
+      <p class="login-footer">
+        ¿No tienes una cuenta?
+        <a class="text-link text-link--accent" routerLink="/signup">Regístrate</a>
+      </p>
+    </article>
+    </div>
+  </div>
+</section>

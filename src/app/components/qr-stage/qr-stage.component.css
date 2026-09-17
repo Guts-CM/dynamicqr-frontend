@@ -1,0 +1,117 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.qr-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 14rem;
+}
+
+.qr-glow {
+  position: absolute;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-limed-spruce-400) 16%, transparent);
+  filter: blur(42px);
+}
+
+.qr-frame {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 28rem);
+  aspect-ratio: 1;
+  padding: 1.15rem;
+  border-radius: 1.75rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-800) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-200) 12%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-limed-spruce-50) 10%, transparent),
+    0 18px 60px color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.qr-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.qr-plate {
+  fill: color-mix(in srgb, var(--color-limed-spruce-950) 42%, transparent);
+  stroke: color-mix(in srgb, var(--color-limed-spruce-300) 14%, transparent);
+  stroke-width: 0.08;
+}
+
+.qr-module {
+  fill: var(--color-limed-spruce-50);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.qr-module[data-kind="finder"] {
+  fill: var(--color-accent);
+}
+
+.qr-module[data-kind="timing"] {
+  fill: var(--color-limed-spruce-200);
+}
+
+.qr-scan {
+  opacity: 0;
+}
+
+.qr-scan-core {
+  fill: var(--color-accent);
+}
+
+.qr-particle {
+  fill: var(--color-limed-spruce-50);
+  opacity: 0;
+}
+
+.qr-stage--static .qr-module {
+  opacity: 1;
+  transform: none;
+}
+
+.qr-stage--static .qr-scan,
+.qr-stage--static .qr-particle {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .qr-stage {
+    min-height: 0;
+  }
+
+  .qr-frame {
+    width: min(100%, 16rem);
+    padding: 0.85rem;
+    border-radius: 1.25rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .qr-frame {
+    width: min(100%, 11.5rem);
+    padding: 0.65rem;
+  }
+
+  .qr-glow {
+    width: 58%;
+    height: 58%;
+    filter: blur(28px);
+  }
+}
