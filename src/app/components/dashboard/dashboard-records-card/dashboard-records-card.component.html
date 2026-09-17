@@ -1,0 +1,67 @@
+<article class="card records-card">
+  <header class="card-head">
+    <div>
+      <p class="kicker">Actividad</p>
+      <h2 class="title">Últimos registros QR</h2>
+    </div>
+    <button type="button" class="icon-btn" aria-label="Más opciones">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="12" cy="5" r="1.1" />
+        <circle cx="12" cy="12" r="1.1" />
+        <circle cx="12" cy="19" r="1.1" />
+      </svg>
+    </button>
+  </header>
+
+  <div class="card-body">
+    @if (loading()) {
+      <p class="records-status">Cargando registros…</p>
+    } @else if (error()) {
+      <p class="records-status">{{ error() }}</p>
+    } @else if (records().length === 0) {
+      <p class="records-status">Aún no hay registros QR</p>
+    } @else {
+      <div class="table-head" aria-hidden="true">
+        <span>Nombre</span>
+        <span>Fecha</span>
+        <span>Tipo</span>
+        <span>Estado</span>
+        <span></span>
+      </div>
+
+      <ul class="record-list">
+        @for (record of records(); track record.id) {
+          <li class="record">
+            <div class="record-name">
+              <span class="record-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                  <rect x="3.5" y="3.5" width="7" height="7" rx="1.2" />
+                  <rect x="13.5" y="3.5" width="7" height="7" rx="1.2" />
+                  <rect x="3.5" y="13.5" width="7" height="7" rx="1.2" />
+                  <path d="M14 14h2.5v2.5H14zM18 14h2.5v6.5H14V18" />
+                </svg>
+              </span>
+              <div>
+                <p>{{ record.name }}</p>
+                <span>{{ record.id }}</span>
+              </div>
+            </div>
+            <span class="record-date">{{ record.created }}</span>
+            <span class="record-type">{{ record.type }}</span>
+            <span class="record-status" [class.is-idle]="record.status === 'Inactivo'">
+              <i aria-hidden="true"></i>
+              {{ record.status }}
+            </span>
+            <button type="button" class="icon-btn record-menu" [attr.aria-label]="'Acciones de ' + record.name">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="6" cy="12" r="1.1" />
+                <circle cx="12" cy="12" r="1.1" />
+                <circle cx="18" cy="12" r="1.1" />
+              </svg>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</article>

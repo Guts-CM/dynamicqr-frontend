@@ -28,7 +28,7 @@
 
       <form class="login-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
         <div class="field">
-          <label class="field-label" for="email">Correo electrónico</label>
+          <label class="field-label" for="email">Usuario</label>
           <div class="field-control">
             <span class="field-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -38,17 +38,16 @@
             </span>
             <input
               id="email"
-              type="email"
+              type="text"
               formControlName="email"
-              autocomplete="email"
-              inputmode="email"
-              placeholder="nombre@dominio.com"
+              autocomplete="username"
+              placeholder="admin"
               [attr.aria-invalid]="submitted() && form.controls.email.invalid"
               [attr.aria-describedby]="submitted() && form.controls.email.invalid ? 'email-error' : null"
             />
           </div>
           @if (submitted() && form.controls.email.invalid) {
-            <p id="email-error" class="field-error" role="alert">Ingresa un correo electrónico válido.</p>
+            <p id="email-error" class="field-error" role="alert">Ingresa tu usuario.</p>
           }
         </div>
 
@@ -97,6 +96,10 @@
           }
         </div>
 
+        @if (authError()) {
+          <p class="auth-error" role="alert">{{ authError() }}</p>
+        }
+
         <div class="login-options">
           <label class="remember">
             <input type="checkbox" formControlName="rememberMe" />
@@ -106,8 +109,8 @@
           <a class="text-link" routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <button type="submit" class="btn-primary">
-          Iniciar sesión
+        <button type="submit" class="btn-primary" [disabled]="submitting()">
+          {{ submitting() ? 'Iniciando sesión...' : 'Iniciar sesión' }}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M5 12h14" stroke-linecap="round" />
             <path d="m13 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />

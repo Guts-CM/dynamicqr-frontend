@@ -1,0 +1,132 @@
+@import "../dashboard-card.css";
+
+.records-card {
+  min-height: 22rem;
+}
+
+.records-status {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 10rem;
+  margin: 0;
+  color: var(--color-limed-spruce-400);
+  font-size: 0.88rem;
+}
+
+.table-head,
+.record {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) 0.9fr 0.7fr 0.8fr 2.1rem;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.table-head {
+  padding: 0 0.35rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-limed-spruce-500);
+}
+
+.record-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+}
+
+.record {
+  min-height: 3.35rem;
+  padding: 0.55rem 0.35rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-limed-spruce-400) 12%, transparent);
+}
+
+.record-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.record-mark {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: none;
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 42%, transparent);
+  color: var(--color-limed-spruce-200);
+}
+
+.record-mark svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.record-name p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-limed-spruce-50);
+}
+
+.record-name span,
+.record-date,
+.record-type {
+  font-size: 0.78rem;
+  color: var(--color-limed-spruce-400);
+}
+
+.record-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-accent);
+}
+
+.record-status i {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.record-status.is-idle {
+  color: var(--color-limed-spruce-500);
+}
+
+@media (max-width: 859px) {
+  .table-head {
+    display: none;
+  }
+
+  .record {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "name status menu"
+      "meta meta menu";
+    row-gap: 0.35rem;
+  }
+
+  .record-name { grid-area: name; }
+  .record-status { grid-area: status; justify-self: end; }
+  .record-menu { grid-area: menu; }
+  .record-date {
+    grid-area: meta;
+    padding-left: 3.1rem;
+  }
+
+  .record-type {
+    display: none;
+  }
+}

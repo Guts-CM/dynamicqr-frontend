@@ -1,0 +1,43 @@
+<article class="card chart-card">
+  <header class="card-head">
+    <div>
+      <p class="kicker">Analítica</p>
+      <h2 class="title">Registros QR por mes</h2>
+    </div>
+    <span class="badge">6 meses</span>
+  </header>
+
+  <div class="card-body">
+    @if (loading()) {
+      <p class="chart-status">Cargando registros…</p>
+    } @else if (error()) {
+      <p class="chart-status">{{ error() }}</p>
+    } @else {
+      <div class="chart" role="img" [attr.aria-label]="chartLabel()">
+        <div class="chart-scale" aria-hidden="true">
+          <span>{{ scaleMax() }}</span>
+          <span>{{ scaleMid() ?? '' }}</span>
+          <span>0</span>
+        </div>
+
+        <div class="chart-plot">
+          @for (month of months(); track month.key) {
+            <div class="chart-col">
+              <div class="chart-bar-slot">
+                <span class="chart-tip" [class.is-hidden]="!month.current">{{ month.value }}</span>
+                <span class="chart-track">
+                  <span
+                    class="chart-bar"
+                    [class.is-current]="month.current"
+                    [style.height.%]="scaleMax() ? (month.value / scaleMax()) * 100 : 0"
+                  ></span>
+                </span>
+              </div>
+              <span class="chart-label">{{ month.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</article>

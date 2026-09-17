@@ -1,0 +1,119 @@
+:host {
+  display: block;
+  min-height: 0;
+  height: 100%;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 16.5rem;
+  padding: 1.15rem 1.2rem 1.2rem;
+  border-radius: 1.45rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-800) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-200) 16%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-limed-spruce-50) 16%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent),
+    0 18px 48px color-mix(in srgb, var(--color-limed-spruce-950) 38%, transparent);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-limed-spruce-50) 12%, transparent),
+    transparent 36%,
+    transparent 72%,
+    color-mix(in srgb, var(--color-limed-spruce-50) 5%, transparent)
+  );
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 22%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-limed-spruce-50) 34%, transparent),
+    transparent
+  );
+}
+
+.card-head,
+.card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-limed-spruce-400);
+}
+
+.title {
+  margin: 0.2rem 0 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--color-limed-spruce-50);
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border: 0;
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent);
+  color: var(--color-limed-spruce-300);
+  cursor: pointer;
+}
+
+.icon-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  color: var(--color-accent);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.card-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
