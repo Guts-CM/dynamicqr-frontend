@@ -5,6 +5,8 @@
 }
 
 .card {
+  --glass-edge: 16;
+  --glass-shine: 12;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -14,7 +16,7 @@
   padding: 1.15rem 1.2rem 1.2rem;
   border-radius: 1.45rem;
   background: color-mix(in srgb, var(--color-limed-spruce-800) 30%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-200) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-200) calc(var(--glass-edge) * 1%), transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--color-limed-spruce-50) 16%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent),
@@ -30,7 +32,7 @@
   pointer-events: none;
   background: linear-gradient(
     145deg,
-    color-mix(in srgb, var(--color-limed-spruce-50) 12%, transparent),
+    color-mix(in srgb, var(--color-limed-spruce-50) calc(var(--glass-shine) * 1%), transparent),
     transparent 36%,
     transparent 72%,
     color-mix(in srgb, var(--color-limed-spruce-50) 5%, transparent)
@@ -94,6 +96,7 @@
   background: color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent);
   color: var(--color-limed-spruce-300);
   cursor: pointer;
+  transition: color 180ms ease, background-color 180ms ease;
 }
 
 .icon-btn svg {
@@ -109,6 +112,12 @@
 .icon-btn:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--color-accent) 70%, transparent);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn {
+    transition: none;
+  }
 }
 
 .card-body {

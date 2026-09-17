@@ -1,10 +1,10 @@
-<article class="card records-card">
+<article class="card records-card" appMotionCard>
   <header class="card-head">
     <div>
       <p class="kicker">Actividad</p>
       <h2 class="title">Últimos registros QR</h2>
     </div>
-    <button type="button" class="icon-btn" aria-label="Más opciones">
+    <button type="button" class="icon-btn" appMotionButton="menu" aria-label="Más opciones">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
         <circle cx="12" cy="5" r="1.1" />
         <circle cx="12" cy="12" r="1.1" />
@@ -29,7 +29,7 @@
         <span></span>
       </div>
 
-      <ul class="record-list">
+      <ul class="record-list" appMotionList>
         @for (record of records(); track record.id) {
           <li class="record">
             <div class="record-name">
@@ -52,7 +52,7 @@
               <i aria-hidden="true"></i>
               {{ record.status }}
             </span>
-            <button type="button" class="icon-btn record-menu" [attr.aria-label]="'Acciones de ' + record.name">
+            <button type="button" class="icon-btn record-menu" appMotionButton="menu" [attr.aria-label]="'Acciones de ' + record.name">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <circle cx="6" cy="12" r="1.1" />
                 <circle cx="12" cy="12" r="1.1" />

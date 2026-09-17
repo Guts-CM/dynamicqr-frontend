@@ -137,6 +137,13 @@
   height: 100%;
   border-radius: inherit;
   background: var(--color-accent);
+  transition: width 1s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .session-fill {
+    transition: none;
+  }
 }
 
 .session-exp {
@@ -156,6 +163,7 @@
   font-size: 0.84rem;
   font-weight: 500;
   cursor: pointer;
+  transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease;
 }
 
 .sign-out:hover,
@@ -175,7 +183,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .live-dot {
+  .live-dot,
+  .sign-out,
+  .session-fill {
     animation: none;
+    transition: none;
   }
 }

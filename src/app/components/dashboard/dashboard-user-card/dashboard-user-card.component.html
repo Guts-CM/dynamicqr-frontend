@@ -1,4 +1,4 @@
-<article class="card user-card">
+<article class="card user-card" appMotionCard>
   <header class="card-head">
     <div>
       <p class="kicker">Cuenta</p>
@@ -43,6 +43,6 @@
       <p class="session-exp">{{ expiresLabel() }}</p>
     </div>
 
-    <button type="button" class="sign-out" (click)="logout.emit()">Cerrar sesión</button>
+    <button type="button" class="sign-out" appMotionButton="logout" (click)="logout.emit()">Cerrar sesión</button>
   </div>
 </article>

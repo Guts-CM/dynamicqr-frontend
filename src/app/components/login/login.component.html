@@ -8,15 +8,15 @@
   </div>
 
   <div class="login-layout">
-    <aside class="login-visual">
+    <aside class="login-visual" data-motion-init>
       <app-qr-stage />
     </aside>
 
     <div class="login-stage">
-    <div class="glass-ornament glass-ornament--tl" aria-hidden="true"></div>
-    <div class="glass-ornament glass-ornament--br" aria-hidden="true"></div>
+    <div class="glass-ornament glass-ornament--tl" data-motion-init aria-hidden="true"></div>
+    <div class="glass-ornament glass-ornament--br" data-motion-init aria-hidden="true"></div>
 
-    <article class="login-card">
+    <article class="login-card" data-motion-init>
       <header class="login-header">
         <h1 id="login-title" class="login-title">
           Bienvenido de <span>nuevo</span>
@@ -29,7 +29,7 @@
       <form class="login-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
         <div class="field">
           <label class="field-label" for="email">Usuario</label>
-          <div class="field-control">
+          <div class="field-control" appMotionInput>
             <span class="field-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" />
@@ -53,7 +53,7 @@
 
         <div class="field">
           <label class="field-label" for="password">Contraseña</label>
-          <div class="field-control">
+          <div class="field-control" appMotionInput>
             <span class="field-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <rect x="5" y="11" width="14" height="9" rx="2" />
@@ -72,6 +72,7 @@
             <button
               type="button"
               class="field-toggle"
+              appMotionButton
               (click)="togglePasswordVisibility()"
               [attr.aria-pressed]="passwordVisible()"
               [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
@@ -109,7 +110,7 @@
           <a class="text-link" routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="submitting()">
+        <button type="submit" class="btn-primary" appMotionButton="arrow" [disabled]="submitting()">
           {{ submitting() ? 'Iniciando sesión...' : 'Iniciar sesión' }}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M5 12h14" stroke-linecap="round" />
@@ -123,7 +124,7 @@
       </div>
 
       <div class="social-row">
-        <button type="button" class="btn-social">
+        <button type="button" class="btn-social" appMotionButton>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path fill="currentColor" d="M21.6 12.23c0-.74-.07-1.45-.19-2.13H12v4.04h5.4a4.62 4.62 0 0 1-2 3.03v2.5h3.24c1.9-1.75 2.96-4.33 2.96-7.44Z" />
             <path fill="currentColor" d="M12 22c2.7 0 4.96-.9 6.61-2.33l-3.24-2.5c-.9.6-2.05.96-3.37.96-2.59 0-4.78-1.75-5.56-4.1H3.09v2.58A10 10 0 0 0 12 22Z" />

@@ -44,6 +44,19 @@
   min-height: 3.35rem;
   padding: 0.55rem 0.35rem;
   border-top: 1px solid color-mix(in srgb, var(--color-limed-spruce-400) 12%, transparent);
+  border-radius: 0.9rem;
+  transition: background-color 180ms ease;
+}
+
+.record:hover,
+.record:focus-within {
+  background: color-mix(in srgb, var(--color-limed-spruce-50) 4%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .record {
+    transition: none;
+  }
 }
 
 .record-name {

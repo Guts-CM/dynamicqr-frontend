@@ -1,4 +1,4 @@
-<article class="card chart-card">
+<article class="card chart-card" appMotionCard>
   <header class="card-head">
     <div>
       <p class="kicker">Analítica</p>
@@ -28,6 +28,7 @@
                 <span class="chart-track">
                   <span
                     class="chart-bar"
+                    data-motion-bar
                     [class.is-current]="month.current"
                     [style.height.%]="scaleMax() ? (month.value / scaleMax()) * 100 : 0"
                   ></span>

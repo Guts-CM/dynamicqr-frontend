@@ -1,5 +1,6 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MotionButtonDirective, MotionCardDirective, MotionListDirective } from '../../../motion/motion.directives';
 import { QrResponse, parseQrFecha } from '../../qr/qr-response';
 import { QrService } from '../../service/qr.service';
 
@@ -24,6 +25,7 @@ const LATEST_LIMIT = 6;
 
 @Component({
   selector: 'app-dashboard-records-card',
+  imports: [MotionButtonDirective, MotionCardDirective, MotionListDirective],
   templateUrl: './dashboard-records-card.component.html',
   styleUrl: './dashboard-records-card.component.css',
 })

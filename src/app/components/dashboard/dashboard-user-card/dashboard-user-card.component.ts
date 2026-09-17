@@ -1,10 +1,12 @@
 import { Component, DestroyRef, computed, inject, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
+import { MotionButtonDirective, MotionCardDirective } from '../../../motion/motion.directives';
 import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-dashboard-user-card',
+  imports: [MotionButtonDirective, MotionCardDirective],
   templateUrl: './dashboard-user-card.component.html',
   styleUrl: './dashboard-user-card.component.css',
 })

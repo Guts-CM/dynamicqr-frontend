@@ -1,5 +1,8 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, Injector, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MotionCardDirective } from '../../../motion/motion.directives';
+import { qsa } from '../../../motion/motion';
+import { animateChartBars } from '../../../motion/ui-motion';
 import { QrResponse, parseQrFecha } from '../../qr/qr-response';
 import { QrService } from '../../service/qr.service';
 
@@ -14,12 +17,16 @@ const MONTH_LABELS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'S
 
 @Component({
   selector: 'app-dashboard-chart-card',
+  imports: [MotionCardDirective],
   templateUrl: './dashboard-chart-card.component.html',
   styleUrl: './dashboard-chart-card.component.css',
 })
 export class DashboardChartCardComponent {
   private readonly qrService = inject(QrService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly injector = inject(Injector);
+  private barsPlayed = false;
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -46,6 +53,18 @@ export class DashboardChartCardComponent {
 
   constructor() {
     this.load();
+
+    effect(() => {
+      const ready = !this.loading() && !this.error();
+      this.months();
+      if (!ready || this.barsPlayed) {
+        return;
+      }
+
+      untracked(() => {
+        afterNextRender(() => this.playBars(), { injector: this.injector });
+      });
+    });
   }
 
   private load(): void {
@@ -104,5 +123,25 @@ export class DashboardChartCardComponent {
     }
 
     return ordered;
+  }
+
+  private playBars(): void {
+    const root = this.host.nativeElement as HTMLElement;
+    const bars = qsa<HTMLElement>(root, '.chart-bar');
+    if (!bars.length) {
+      requestAnimationFrame(() => {
+        const retry = qsa<HTMLElement>(this.host.nativeElement as HTMLElement, '.chart-bar');
+        if (!retry.length) {
+          return;
+        }
+
+        this.barsPlayed = true;
+        animateChartBars(retry);
+      });
+      return;
+    }
+
+    this.barsPlayed = true;
+    animateChartBars(bars);
   }
 }

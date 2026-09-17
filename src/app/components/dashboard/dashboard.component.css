@@ -121,6 +121,8 @@
 }
 
 .nav-center {
+  position: relative;
+  isolation: isolate;
   display: flex;
   justify-content: center;
   gap: 0.2rem;
@@ -129,6 +131,48 @@
   background: color-mix(in srgb, var(--color-limed-spruce-950) 38%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-limed-spruce-200) 10%, transparent);
   justify-self: center;
+}
+
+.nav-indicator {
+  --nav-glow: 0.22;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+  width: 0;
+  height: 0;
+  border-radius: 999px;
+  background: var(--color-accent);
+  pointer-events: none;
+  opacity: 0;
+  box-shadow:
+    0 0 10px color-mix(in srgb, var(--color-accent) calc(var(--nav-glow) * 70%), transparent),
+    0 0 22px color-mix(in srgb, var(--color-accent) calc(var(--nav-glow) * 28%), transparent);
+}
+
+.nav-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 28%,
+    color-mix(in srgb, var(--color-limed-spruce-50) 42%, transparent) 50%,
+    transparent 72%
+  );
+  opacity: calc(0.22 + var(--nav-glow) * 0.28);
+  transform: translateX(-130%);
+  animation: nav-sheen 3.8s ease-in-out infinite;
+}
+
+.nav-center.has-indicator .nav-indicator {
+  opacity: 1;
+}
+
+.nav-center.has-indicator .nav-link.is-active {
+  background: transparent;
 }
 
 .nav-dock {
@@ -145,6 +189,7 @@
 
 .nav-link {
   position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -159,15 +204,19 @@
   cursor: pointer;
   flex: none;
   white-space: nowrap;
+  transition: color 280ms cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .nav-link.is-active {
   background: var(--color-accent);
+}
+
+.nav-link.is-on {
   color: var(--color-accent-foreground);
 }
 
-.nav-link:hover:not(.is-active),
-.nav-link:focus-visible:not(.is-active) {
+.nav-link:hover:not(.is-on),
+.nav-link:focus-visible:not(.is-on) {
   color: var(--color-limed-spruce-50);
 }
 
@@ -315,6 +364,11 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 16%, transparent);
+}
+
+.cta [data-motion-icon] {
+  display: inline-flex;
+  line-height: 1;
 }
 
 .grid {
@@ -474,12 +528,31 @@
   }
 }
 
+@keyframes nav-sheen {
+  0%,
+  22% {
+    transform: translateX(-130%);
+  }
+
+  58%,
+  100% {
+    transform: translateX(130%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-link,
   .cta,
   .logout-btn,
-  .logout-btn span {
+  .logout-btn span,
+  .nav-indicator {
     transition: none;
+  }
+
+  .nav-indicator::after {
+    animation: none;
+    opacity: 0.28;
+    transform: none;
   }
 
   .logout-btn:hover span,

@@ -157,7 +157,6 @@
   height: 5.75rem;
   clip-path: polygon(0 0, 100% 0, 0 100%);
   border-top-left-radius: 1.15rem;
-  animation: ornament-enter 1s ease 0.12s both;
 }
 
 .glass-ornament--br {
@@ -167,7 +166,6 @@
   height: 5.5rem;
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
   border-bottom-right-radius: 1.15rem;
-  animation: ornament-enter 1s ease 0.18s both;
 }
 
 .login-card {
@@ -183,7 +181,6 @@
     0 24px 80px color-mix(in srgb, var(--color-limed-spruce-950) 55%, transparent);
   backdrop-filter: blur(28px) saturate(140%);
   -webkit-backdrop-filter: blur(28px) saturate(140%);
-  animation: login-enter 0.9s ease both;
 }
 
 .login-card::before {
@@ -447,11 +444,10 @@
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent),
     0 8px 28px color-mix(in srgb, var(--color-accent) 18%, transparent);
-  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+  transition: box-shadow 180ms ease, filter 180ms ease;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
   filter: brightness(1.04);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--color-accent) 28%, transparent),
@@ -459,13 +455,12 @@
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  filter: none;
 }
 
 .btn-primary:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  transform: none;
   filter: none;
 }
 
@@ -510,11 +505,10 @@
   font-size: 0.92rem;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+  transition: border-color 160ms ease, background-color 160ms ease;
 }
 
 .btn-social:hover {
-  transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--color-limed-spruce-200) 32%, transparent);
   background: color-mix(in srgb, var(--color-limed-spruce-700) 42%, transparent);
 }
@@ -575,41 +569,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .login-card,
-  .glass-ornament {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-
   .btn-primary,
   .btn-social,
   .field-control input,
   .text-link {
     transition: none;
-  }
-}
-
-@keyframes login-enter {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes ornament-enter {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }

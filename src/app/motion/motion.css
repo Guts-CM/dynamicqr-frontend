@@ -1,0 +1,5 @@
+@media (prefers-reduced-motion: no-preference) {
+  [data-motion-init] {
+    opacity: 0;
+  }
+}
