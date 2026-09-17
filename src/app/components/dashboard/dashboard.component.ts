@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../service/auth.service';
@@ -9,6 +10,7 @@ import { DashboardUserCardComponent } from './dashboard-user-card/dashboard-user
 @Component({
   selector: 'app-dashboard',
   imports: [
+    NgTemplateOutlet,
     DashboardUserCardComponent,
     DashboardChartCardComponent,
     DashboardReservedCardComponent,
@@ -25,7 +27,13 @@ export class DashboardComponent {
   private readonly router = inject(Router);
 
   protected readonly displayName = 'Admin';
-  protected readonly navItems = ['Panel', 'QR', 'Escaneos', 'Versiones', 'Usuarios'];
+  protected readonly navItems = [
+    { id: 'panel', label: 'Panel' },
+    { id: 'qr', label: 'QR' },
+    { id: 'escaneos', label: 'Escaneos' },
+    { id: 'versiones', label: 'Versiones' },
+    { id: 'usuarios', label: 'Usuarios' },
+  ] as const;
 
   protected signOut(): void {
     this.authService.logout();

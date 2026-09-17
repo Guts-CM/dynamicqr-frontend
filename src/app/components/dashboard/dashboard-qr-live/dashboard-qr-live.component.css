@@ -1,0 +1,93 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.qr-live {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 10.5rem;
+  perspective: 720px;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.qr-aura {
+  position: absolute;
+  width: 68%;
+  height: 68%;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-limed-spruce-50) 14%, transparent);
+  filter: blur(28px);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.qr-rig {
+  position: relative;
+  z-index: 1;
+  width: min(78%, 10.75rem);
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.qr-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.qr-plate {
+  fill: color-mix(in srgb, var(--color-limed-spruce-950) 38%, transparent);
+  stroke: color-mix(in srgb, var(--color-limed-spruce-300) 16%, transparent);
+  stroke-width: 0.08;
+}
+
+.qr-mod {
+  fill: var(--color-limed-spruce-50);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.qr-mod[data-kind="finder"] {
+  fill: var(--color-accent);
+}
+
+.qr-mod[data-kind="timing"] {
+  fill: var(--color-limed-spruce-200);
+}
+
+.qr-beam {
+  opacity: 0.22;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.qr-spark {
+  fill: var(--color-accent);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-static {
+  cursor: default;
+}
+
+.is-static .qr-aura,
+.is-static .qr-beam {
+  opacity: 0;
+}
+
+@media (pointer: coarse) {
+  .qr-live {
+    cursor: default;
+    touch-action: manipulation;
+  }
+}
