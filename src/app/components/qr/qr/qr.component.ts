@@ -226,12 +226,17 @@ export class QrComponent {
   }
 
   protected selectSection(id: (typeof this.navItems)[number]['id']): void {
-    if (id === 'qr') {
+    if (id === 'escaneos' || id === 'qr') {
       return;
     }
 
     if (id === 'usuarios') {
       void this.router.navigateByUrl('/usuarios');
+      return;
+    }
+
+    if (id === 'versiones') {
+      void this.router.navigateByUrl('/versiones');
       return;
     }
 
@@ -932,26 +937,10 @@ export class QrComponent {
   }
 
   private bootMotion(): void {
-    this.playEntrance();
     this.setupNav();
     this.navReady = true;
     this.syncIndicators(true);
     this.setupNavGlow();
-  }
-
-  private playEntrance(): void {
-    const root = this.host.nativeElement as HTMLElement;
-    const navbar = qs<HTMLElement>(root, '.navbar');
-    const welcome = qs<HTMLElement>(root, '.welcome');
-    const dock = qs<HTMLElement>(root, '.nav-dock');
-    const host = qs<HTMLElement>(root, '.qr-host');
-
-    animateSection([
-      ...(navbar ? [{ targets: navbar, y: -8, duration: 480, at: 0 }] : []),
-      ...(welcome ? [{ targets: welcome, y: 12, duration: 520, at: 70 }] : []),
-      ...(host ? [{ targets: host, y: 16, duration: 560, at: 140 }] : []),
-      ...(dock ? [{ targets: dock, y: 10, duration: 420, at: 220 }] : []),
-    ]);
   }
 
   private setupNav(): void {

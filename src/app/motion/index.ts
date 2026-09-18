@@ -16,6 +16,7 @@ export {
   animateWorkspaceOut,
   animateWorkspaceIn,
 } from './ui-motion';
+export { SectionTransitionService } from './section-transition';
 export {
   MotionButtonDirective,
   MotionCardDirective,

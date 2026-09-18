@@ -215,9 +215,16 @@
   color: var(--color-accent-foreground);
 }
 
-.nav-link:hover:not(.is-on),
-.nav-link:focus-visible:not(.is-on) {
+.nav-link:hover:not(.is-on):not(:disabled),
+.nav-link:focus-visible:not(.is-on):not(:disabled) {
   color: var(--color-limed-spruce-50);
+}
+
+.nav-link:disabled,
+.nav-link.is-disabled {
+  color: color-mix(in srgb, var(--color-limed-spruce-500) 72%, transparent);
+  opacity: 0.42;
+  cursor: not-allowed;
 }
 
 .nav-actions {

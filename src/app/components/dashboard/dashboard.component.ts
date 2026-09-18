@@ -11,7 +11,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MotionButtonDirective } from '../../motion/motion.directives';
 import { MotionService, qs, qsa, type MotionTeardown } from '../../motion/motion';
 import { MOTION } from '../../motion/motion-tokens';
@@ -41,7 +41,6 @@ import { DashboardUserCardComponent } from './dashboard-user-card/dashboard-user
 export class DashboardComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly injector = inject(Injector);
@@ -69,12 +68,6 @@ export class DashboardComponent {
   protected readonly settledSection = signal<(typeof this.navItems)[number]['id']>('panel');
 
   constructor() {
-    const section = this.route.snapshot.queryParamMap.get('section');
-    if (section === 'escaneos' || section === 'versiones') {
-      this.activeSection.set(section);
-      this.settledSection.set(section);
-    }
-
     afterNextRender(() => this.bootMotion());
 
     effect(() => {
@@ -94,6 +87,10 @@ export class DashboardComponent {
   }
 
   protected selectSection(id: (typeof this.navItems)[number]['id']): void {
+    if (id === 'escaneos') {
+      return;
+    }
+
     if (id === 'usuarios') {
       void this.router.navigateByUrl('/usuarios');
       return;
@@ -101,6 +98,11 @@ export class DashboardComponent {
 
     if (id === 'qr') {
       void this.router.navigateByUrl('/qr');
+      return;
+    }
+
+    if (id === 'versiones') {
+      void this.router.navigateByUrl('/versiones');
       return;
     }
 
@@ -128,25 +130,10 @@ export class DashboardComponent {
   }
 
   private bootMotion(): void {
-    this.playEntrance();
     this.setupNav();
     this.navReady = true;
     this.syncIndicators(true);
     this.setupNavGlow();
-  }
-
-  private playEntrance(): void {
-    const root = this.host.nativeElement as HTMLElement;
-    const navbar = qs<HTMLElement>(root, '.navbar');
-    const welcome = qs<HTMLElement>(root, '.welcome');
-    const dock = qs<HTMLElement>(root, '.nav-dock');
-
-    animateSection([
-      ...(navbar ? [{ targets: navbar, y: -8, duration: 480, at: 0 }] : []),
-      ...(welcome ? [{ targets: welcome, y: 12, duration: 520, at: 70 }] : []),
-      ...this.panelBeats(140),
-      ...(dock ? [{ targets: dock, y: 10, duration: 420, at: 220 }] : []),
-    ]);
   }
 
   private queuePanelEntrance(id: (typeof this.navItems)[number]['id']): void {

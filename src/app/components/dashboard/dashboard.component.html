@@ -82,9 +82,12 @@
       class="nav-link"
       [class.is-active]="item.id === activeSection()"
       [class.is-on]="item.id === settledSection()"
+      [class.is-disabled]="item.id === 'escaneos'"
+      [disabled]="item.id === 'escaneos'"
       [attr.data-section]="item.id"
       [attr.aria-current]="item.id === activeSection() ? 'page' : null"
-      [attr.aria-label]="item.label"
+      [attr.aria-label]="item.id === 'escaneos' ? 'Escaneos, no disponible' : item.label"
+      [attr.title]="item.id === 'escaneos' ? 'No disponible' : null"
       (click)="selectSection(item.id)"
     >
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">

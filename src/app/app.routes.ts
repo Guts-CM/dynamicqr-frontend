@@ -4,12 +4,14 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LoginComponent } from './components/login/login/login.component';
 import { QrComponent } from './components/qr/qr/qr.component';
 import { UsuarioComponent } from './components/usuario/usuario/usuario.component';
+import { VersionComponent } from './components/version/version/version.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'qr', component: QrComponent, canActivate: [authGuard] },
+  { path: 'versiones', component: VersionComponent, canActivate: [authGuard] },
   { path: 'usuarios', component: UsuarioComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

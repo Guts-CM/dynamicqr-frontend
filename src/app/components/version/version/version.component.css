@@ -1,0 +1,133 @@
+@import "../../dashboard/dashboard.component.css";
+@import "../../dashboard/dashboard-card.css";
+@import "../../qr/qr-workspace.css";
+
+.version-search {
+  margin: 0 0 0.85rem;
+}
+
+.version-search-skel {
+  width: 100%;
+  height: 2.65rem;
+  margin-bottom: 0.85rem;
+  border-radius: 0.9rem;
+}
+
+.version-empty-filter {
+  min-height: 12rem;
+  padding: 1.4rem 0.4rem;
+}
+
+.version-timeline {
+  position: relative;
+  padding-left: 1.15rem;
+}
+
+.version-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0.95rem;
+  bottom: 0.95rem;
+  left: 0.28rem;
+  width: 1px;
+  background: color-mix(in srgb, var(--color-limed-spruce-300) 22%, transparent);
+  pointer-events: none;
+}
+
+.version-timeline .qr-item {
+  position: relative;
+}
+
+.version-timeline .qr-item::before {
+  content: "";
+  position: absolute;
+  top: 1.15rem;
+  left: -1.02rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-limed-spruce-300) 55%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-limed-spruce-950) 88%, transparent);
+}
+
+.version-timeline .qr-item.is-selected::before,
+.version-timeline .qr-item.is-latest::before {
+  background: var(--color-accent);
+}
+
+.version-diff {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.version-diff-card {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.9rem 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-300) 14%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 22%, transparent);
+}
+
+.version-diff-label {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-limed-spruce-500);
+}
+
+.version-diff-card dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+  margin: 0;
+}
+
+.version-diff-card dt {
+  margin: 0 0 0.22rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-limed-spruce-500);
+}
+
+.version-diff-card dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-limed-spruce-300);
+}
+
+.version-diff-card dd.is-next {
+  color: var(--color-limed-spruce-50);
+}
+
+.version-note {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-limed-spruce-200);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 720px) {
+  .version-timeline {
+    padding-left: 0;
+  }
+
+  .version-timeline::before {
+    display: none;
+  }
+
+  .version-timeline .qr-item::before {
+    display: none;
+  }
+
+  .version-diff-card dl {
+    grid-template-columns: 1fr;
+  }
+}
