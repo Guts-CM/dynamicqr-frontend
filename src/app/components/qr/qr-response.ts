@@ -36,13 +36,37 @@ export function parseQrFecha(value: string | number[] | null): Date | null {
   }
 
   if (typeof value === 'string') {
+    const match = value.match(
+      /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(.*)?$/,
+    );
+    if (match) {
+      const [, year, month, day, hour, minute, second, fraction, suffix] = match;
+      const ms = fraction ? Number((fraction + '000').slice(0, 3)) : 0;
+      const tz = (suffix ?? '').trim();
+      if (tz === 'Z' || tz === 'z' || /^[+-]\d{2}:?\d{2}$/.test(tz)) {
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+      }
+
+      return new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day),
+        Number(hour),
+        Number(minute),
+        Number(second),
+        ms,
+      );
+    }
+
     const parsed = new Date(value);
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
   if (Array.isArray(value) && value.length >= 2) {
-    const [year, month, day = 1, hour = 0, minute = 0, second = 0] = value;
-    return new Date(year, month - 1, day, hour, minute, second);
+    const [year, month, day = 1, hour = 0, minute = 0, second = 0, nano = 0] = value;
+    const ms = Number(nano) > 1000 ? Math.floor(Number(nano) / 1e6) : Number(nano) || 0;
+    return new Date(year, month - 1, day, hour, minute, second, ms);
   }
 
   return null;
