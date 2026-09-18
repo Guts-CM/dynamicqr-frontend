@@ -1,4 +1,4 @@
-@import "../dashboard-card.css";
+@import "../dashboard/dashboard-card.css";
 
 :host {
   display: block;

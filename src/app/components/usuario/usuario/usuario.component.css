@@ -1,0 +1,70 @@
+@import "../../dashboard/dashboard.component.css";
+@import "../../dashboard/dashboard-card.css";
+@import "../../qr/qr-workspace.css";
+
+:host.is-switching {
+  pointer-events: none;
+}
+
+.user-search {
+  margin: 0 0 0.85rem;
+}
+
+.user-search-skel {
+  width: 100%;
+  height: 2.65rem;
+  margin-bottom: 0.85rem;
+  border-radius: 0.9rem;
+}
+
+.user-empty-filter {
+  min-height: 12rem;
+  padding: 1.4rem 0.4rem;
+}
+
+.user-identity {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  min-height: 13.5rem;
+  padding: 1.5rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-300) 14%, transparent);
+  border-radius: 1.2rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent);
+  text-align: center;
+}
+
+.user-avatar {
+  display: grid;
+  place-items: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  font-size: 1.28rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.user-identity-name {
+  margin: 0;
+  max-width: 16rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-limed-spruce-50);
+}
+
+.user-email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-limed-spruce-200);
+  font-size: 0.84rem;
+}
+
+.user-identity .qr-url-row {
+  width: 100%;
+  justify-content: center;
+}

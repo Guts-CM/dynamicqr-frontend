@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { QrEstilo, QrResponse } from '../qr/qr-response';
+import { QrEstilo, QrResponse } from './qr-response';
 
 export type QrCreatePayload = {
   nombre: string;

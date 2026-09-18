@@ -1,5 +1,5 @@
-@import "../dashboard-card.css";
-@import "../dashboard-qr-section/dashboard-qr-section.component.css";
+@import "../../dashboard/dashboard-card.css";
+@import "../qr-workspace.css";
 
 :host {
   display: block;

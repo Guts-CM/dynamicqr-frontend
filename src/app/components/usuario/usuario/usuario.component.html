@@ -1,0 +1,561 @@
+<section class="dash">
+  <div class="dash-atmosphere" aria-hidden="true">
+    <span class="dash-glow dash-glow--left"></span>
+    <span class="dash-glow dash-glow--right"></span>
+    <span class="dash-streak"></span>
+  </div>
+
+  <div class="dash-shell">
+    <header class="navbar" data-motion-init>
+      <a class="brand" href="/dashboard" appMotionButton (click)="$event.preventDefault(); goDashboard()">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i>
+        </span>
+        <span class="brand-name">DynamicQR</span>
+      </a>
+
+      <nav class="nav-center nav-desktop" #desktopNav aria-label="Secciones">
+        <span class="nav-indicator" aria-hidden="true"></span>
+        <ng-container [ngTemplateOutlet]="sectionLinks" />
+      </nav>
+
+      <div class="nav-actions">
+        <button type="button" class="logout-btn" appMotionButton="logout" (click)="signOut()" aria-label="Cerrar sesión">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M10 5.5H7.2A2.2 2.2 0 0 0 5 7.7v8.6A2.2 2.2 0 0 0 7.2 18.5H10" />
+            <path d="M10 12h9" />
+            <path d="m16.2 8.8 3.8 3.2-3.8 3.2" />
+          </svg>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="dash-body">
+      <main class="main">
+        <header class="welcome" data-motion-init>
+          <div>
+            @if (mode() === 'create') {
+              <h1>Nuevo <span>usuario</span></h1>
+              <p>Completa los datos de la cuenta. El acceso se genera al guardar.</p>
+            } @else {
+              <h1>Usuarios</h1>
+              <p>Gestiona y da mantenimiento a los usuarios del sistema.</p>
+            }
+          </div>
+          <div class="welcome-meta">
+            <span class="date-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <rect x="4" y="5.5" width="16" height="14" rx="2.2" />
+                <path d="M8 3.8v3.4M16 3.8v3.4M4 10h16" />
+              </svg>
+              {{ dateLabel }}
+            </span>
+            <button
+              type="button"
+              class="cta"
+              appMotionButton="plus"
+              [disabled]="creatingLocked()"
+              (click)="startCreate()"
+            >
+              <span data-motion-icon aria-hidden="true">+</span>
+              Nuevo usuario
+            </button>
+          </div>
+        </header>
+
+        <div class="qr-host">
+@if (mode() === 'create') {
+  <app-usuario-create
+    [busy]="createBusy()"
+    [error]="createError()"
+    [success]="createSuccess()"
+    (cancel)="cancelCreate()"
+    (save)="submitCreate($event)"
+  />
+} @else {
+<div class="qr-workspace">
+@if (loading()) {
+  <div class="qr-section" aria-busy="true" aria-label="Cargando usuarios">
+    <article class="card qr-list-card">
+      <header class="card-head">
+        <div>
+          <p class="kicker">Directorio</p>
+          <h2 class="title">Usuarios</h2>
+        </div>
+        <span class="skel skel-badge"></span>
+      </header>
+      <div class="card-body">
+        <span class="skel skel-line user-search-skel" aria-hidden="true"></span>
+        <ul class="qr-skel-list" aria-hidden="true">
+          @for (row of [1, 2, 3, 4, 5]; track row) {
+            <li class="qr-skel-item">
+              <span class="skel skel-line skel-line--sm"></span>
+              <span class="skel skel-line"></span>
+              <span class="skel skel-line skel-line--md"></span>
+            </li>
+          }
+        </ul>
+      </div>
+    </article>
+
+    <article class="card qr-detail-card">
+      <header class="card-head">
+        <div>
+          <p class="kicker">Detalle</p>
+          <h2 class="title">Vista del usuario</h2>
+        </div>
+      </header>
+      <div class="card-body qr-detail-skel">
+        <div class="qr-detail-layout">
+          <div class="qr-skel-fields">
+            <span class="skel skel-line skel-line--sm"></span>
+            <span class="skel skel-line"></span>
+            <span class="skel skel-line skel-line--md"></span>
+            <span class="skel skel-line skel-line--sm"></span>
+            <span class="skel skel-line"></span>
+          </div>
+          <span class="skel skel-preview"></span>
+        </div>
+        <span class="skel skel-block"></span>
+        <span class="skel skel-block skel-block--short"></span>
+      </div>
+    </article>
+  </div>
+} @else if (error()) {
+  <article class="card qr-state-card" appMotionCard>
+    <div class="qr-state">
+      <span class="qr-state-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="9.2" cy="9" r="2.4" />
+          <path d="M4.8 17.4c.4-2.3 2.2-3.6 4.4-3.6s4 1.3 4.4 3.6" />
+          <circle cx="16.2" cy="9.4" r="2" />
+          <path d="M15.2 13.9c1.8.2 3.2 1.3 3.6 3.5" />
+        </svg>
+      </span>
+      <h2>No se pudieron cargar los usuarios</h2>
+      <p>Inténtalo de nuevo. Si el problema continúa, vuelve más tarde.</p>
+      <button type="button" class="qr-retry" appMotionButton (click)="load()">Reintentar</button>
+    </div>
+  </article>
+} @else if (records().length === 0) {
+  <article class="card qr-state-card" appMotionCard>
+    <div class="qr-state">
+      <span class="qr-state-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="9.2" cy="9" r="2.4" />
+          <path d="M4.8 17.4c.4-2.3 2.2-3.6 4.4-3.6s4 1.3 4.4 3.6" />
+          <circle cx="16.2" cy="9.4" r="2" />
+          <path d="M15.2 13.9c1.8.2 3.2 1.3 3.6 3.5" />
+        </svg>
+      </span>
+      <h2>No hay usuarios</h2>
+      <p>Cuando existan cuentas en el sistema, aparecerán aquí para consultarlas y administrarlas.</p>
+      <button type="button" class="qr-cta" appMotionButton="plus" (click)="openCreate()">
+        <span data-motion-icon aria-hidden="true">+</span>
+        Nuevo usuario
+      </button>
+    </div>
+  </article>
+} @else {
+  <div class="qr-section" [class.is-detail]="mobileDetail()">
+    <article class="card qr-list-card" appMotionCard>
+      <header class="card-head">
+        <div>
+          <p class="kicker">Directorio</p>
+          <h2 class="title">Usuarios</h2>
+        </div>
+        <span class="count-chip">{{ countLabel() }}</span>
+      </header>
+
+      <div class="card-body">
+        <div class="qr-field user-search">
+          <label class="qr-field-label" for="user-search">Buscar</label>
+          <div class="qr-field-control" appMotionInput>
+            <input
+              id="user-search"
+              type="search"
+              [value]="query()"
+              (input)="onQuery($event)"
+              placeholder="Nombre, correo o ID"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        @if (visibleRecords().length === 0) {
+          <div class="qr-state qr-state--inset user-empty-filter">
+            <h2>No se encontraron usuarios</h2>
+            <p>Prueba con otro nombre, correo o identificador.</p>
+          </div>
+        } @else {
+          <ul class="qr-list" role="listbox" aria-label="Usuarios disponibles">
+            @for (record of visibleRecords(); track record.usuariosId) {
+              <li>
+                <button
+                  type="button"
+                  class="qr-item"
+                  role="option"
+                  [class.is-selected]="record.usuariosId === selectedId()"
+                  [class.is-idle]="record.activo === false"
+                  [attr.aria-selected]="record.usuariosId === selectedId()"
+                  (click)="selectUser(record)"
+                >
+                  <span class="qr-item-id">{{ codeId(record) }}</span>
+                  <span class="qr-item-name">{{ displayName(record) }}</span>
+                  <span class="qr-item-date">{{ record.email }} · Creado {{ createdLabel(record) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </article>
+
+    <article class="card qr-detail-card" appMotionCard>
+      @if (!selected()) {
+        <div class="qr-state qr-state--inset">
+          <span class="qr-state-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+              <circle cx="9.2" cy="9" r="2.4" />
+              <path d="M4.8 17.4c.4-2.3 2.2-3.6 4.4-3.6s4 1.3 4.4 3.6" />
+              <circle cx="16.2" cy="9.4" r="2" />
+              <path d="M15.2 13.9c1.8.2 3.2 1.3 3.6 3.5" />
+            </svg>
+          </span>
+          <h2>Selecciona un usuario para ver su detalle</h2>
+          <p>Elige un elemento de la lista para consultar su información y auditoría.</p>
+        </div>
+      } @else {
+        <div class="qr-detail-live">
+          <header class="card-head qr-detail-head">
+            <button type="button" class="qr-back" appMotionButton="back" (click)="backToList()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M15 6.5 9.5 12 15 17.5" />
+              </svg>
+              Usuarios
+            </button>
+            <div>
+              <p class="kicker">Detalle</p>
+              <h2 class="title">{{ displayName(selected()!) }}</h2>
+            </div>
+            <div class="qr-detail-actions">
+              @if (hasStatus(selected()!)) {
+                <span class="status-chip" [class.is-idle]="selected()!.activo === false">
+                  <i aria-hidden="true"></i>
+                  {{ selected()!.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              }
+              <button
+                type="button"
+                class="icon-btn"
+                appMotionButton
+                aria-label="Editar usuario"
+                [disabled]="actionBusy()"
+                (click)="openEdit()"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M4.8 16.6 16.2 5.2a1.8 1.8 0 0 1 2.5 0l1.1 1.1a1.8 1.8 0 0 1 0 2.5L8.4 20.2 4 21z" />
+                  <path d="m14.8 6.6 2.6 2.6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="icon-btn is-danger"
+                appMotionButton
+                [attr.aria-label]="selected()!.activo === false ? 'Reactivar usuario' : 'Eliminar usuario'"
+                [disabled]="actionBusy()"
+                (click)="openDelete()"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M5.5 7.2h13" />
+                  <path d="M9.2 7.2V5.8A1.6 1.6 0 0 1 10.8 4.2h2.4A1.6 1.6 0 0 1 14.8 5.8v1.4" />
+                  <path d="M17.4 7.2V18a1.8 1.8 0 0 1-1.8 1.8H8.4A1.8 1.8 0 0 1 6.6 18V7.2" />
+                  <path d="M10.2 10.6v5.2M13.8 10.6v5.2" />
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <div class="card-body qr-detail-body">
+            <div class="qr-detail-layout">
+              <section class="qr-group qr-info" data-qr-motion>
+                <p class="kicker">Información general</p>
+                <dl class="qr-fields">
+                  <div>
+                    <dt>ID de usuario</dt>
+                    <dd>{{ codeId(selected()!) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Nombre</dt>
+                    <dd>{{ selected()!.nombre.trim() || '—' }}</dd>
+                  </div>
+                  <div>
+                    <dt>Apellido paterno</dt>
+                    <dd>{{ selected()!.apellidoPaterno.trim() || '—' }}</dd>
+                  </div>
+                  <div>
+                    <dt>Apellido materno</dt>
+                    <dd>{{ selected()!.apellidoMaterno?.trim() || '—' }}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section class="qr-preview" data-qr-motion>
+                <p class="kicker">Cuenta</p>
+                <div class="user-identity">
+                  <span class="user-avatar" aria-hidden="true">{{ initials(selected()!) }}</span>
+                  <p class="user-identity-name">{{ displayName(selected()!) }}</p>
+                  <div class="qr-url-row">
+                    <span class="user-email" [title]="selected()!.email">{{ selected()!.email || '—' }}</span>
+                    @if (selected()!.email) {
+                      <button
+                        type="button"
+                        class="icon-btn"
+                        appMotionButton="copy"
+                        [attr.aria-label]="copied() ? 'Correo copiado' : 'Copiar correo'"
+                        (click)="copyEmail(selected()!, $event.currentTarget)"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                          @if (copied()) {
+                            <path d="m6.8 12.2 3.1 3.1 7.3-7.4" />
+                          } @else {
+                            <rect x="8.2" y="8.2" width="10" height="10" rx="1.6" />
+                            <path d="M6.4 15.2H5.8A1.8 1.8 0 0 1 4 13.4V5.8A1.8 1.8 0 0 1 5.8 4h7.6A1.8 1.8 0 0 1 15.2 5.8v.6" />
+                          }
+                        </svg>
+                      </button>
+                    }
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <section class="qr-group qr-audit" data-qr-motion>
+              <p class="kicker">Auditoría</p>
+              <dl class="qr-fields qr-fields--audit">
+                <div>
+                  <dt>Creado por</dt>
+                  <dd>{{ creatorLabel(selected()!) }}</dd>
+                </div>
+                <div>
+                  <dt>Fecha de creación</dt>
+                  <dd>{{ createdAt(selected()!) }}</dd>
+                </div>
+                <div>
+                  <dt>Editado por</dt>
+                  <dd>{{ editorLabel(selected()!) }}</dd>
+                </div>
+                <div>
+                  <dt>Última edición</dt>
+                  <dd>{{ editedAt(selected()!) }}</dd>
+                </div>
+              </dl>
+            </section>
+          </div>
+        </div>
+      }
+    </article>
+  </div>
+
+  @if (dialog(); as kind) {
+    <div class="qr-dialog-overlay" role="presentation" (click)="closeDialog()">
+      <div
+        class="qr-dialog-panel"
+        role="dialog"
+        [attr.aria-modal]="true"
+        [attr.aria-labelledby]="kind === 'edit' ? 'user-edit-title' : 'user-delete-title'"
+        (click)="$event.stopPropagation()"
+      >
+        @if (kind === 'edit') {
+          <header class="qr-dialog-head">
+            <div>
+              <p class="kicker">Edición</p>
+              <h2 id="user-edit-title" class="title">Editar usuario</h2>
+            </div>
+            <button
+              type="button"
+              class="icon-btn"
+              appMotionButton
+              aria-label="Cerrar"
+              [disabled]="actionBusy()"
+              (click)="closeDialog()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="m7 7 10 10M17 7 7 17" />
+              </svg>
+            </button>
+          </header>
+
+          <form class="qr-dialog-form" [formGroup]="editForm" (ngSubmit)="saveEdit()" novalidate>
+            <div class="qr-field">
+              <label class="qr-field-label" for="user-edit-nombre">Nombre</label>
+              <div class="qr-field-control" appMotionInput>
+                <input id="user-edit-nombre" type="text" formControlName="nombre" autocomplete="given-name" />
+              </div>
+              @if (editForm.controls.nombre.touched && editForm.controls.nombre.invalid) {
+                <p class="qr-field-error" role="alert">El nombre es obligatorio.</p>
+              }
+            </div>
+
+            <div class="qr-field">
+              <label class="qr-field-label" for="user-edit-paterno">Apellido paterno</label>
+              <div class="qr-field-control" appMotionInput>
+                <input id="user-edit-paterno" type="text" formControlName="apellidoPaterno" autocomplete="family-name" />
+              </div>
+              @if (editForm.controls.apellidoPaterno.touched && editForm.controls.apellidoPaterno.invalid) {
+                <p class="qr-field-error" role="alert">El apellido paterno es obligatorio.</p>
+              }
+            </div>
+
+            <div class="qr-field">
+              <label class="qr-field-label" for="user-edit-materno">Apellido materno</label>
+              <div class="qr-field-control" appMotionInput>
+                <input id="user-edit-materno" type="text" formControlName="apellidoMaterno" autocomplete="additional-name" />
+              </div>
+            </div>
+
+            <div class="qr-field">
+              <label class="qr-field-label" for="user-edit-email">Correo electrónico</label>
+              <div class="qr-field-control" appMotionInput>
+                <input id="user-edit-email" type="email" formControlName="email" autocomplete="email" />
+              </div>
+              @if (editForm.controls.email.touched && editForm.controls.email.invalid) {
+                <p class="qr-field-error" role="alert">Ingresa un correo electrónico válido.</p>
+              }
+            </div>
+
+            @if (actionError()) {
+              <p class="qr-action-error" role="alert">{{ actionError() }}</p>
+            }
+
+            <div class="qr-dialog-actions">
+              <button type="button" class="qr-retry" appMotionButton [disabled]="actionBusy()" (click)="closeDialog()">
+                Cancelar
+              </button>
+              <button type="submit" class="qr-cta" appMotionButton [disabled]="actionBusy()">
+                {{ actionBusy() ? 'Guardando…' : 'Guardar cambios' }}
+              </button>
+            </div>
+          </form>
+        } @else {
+          @if (selected(); as record) {
+          <header class="qr-dialog-head">
+            <div>
+              <p class="kicker">Estado</p>
+              <h2 id="user-delete-title" class="title">
+                {{ record.activo === false ? 'Reactivar usuario' : 'Eliminar usuario' }}
+              </h2>
+            </div>
+            <button
+              type="button"
+              class="icon-btn"
+              appMotionButton
+              aria-label="Cerrar"
+              [disabled]="actionBusy()"
+              (click)="closeDialog()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="m7 7 10 10M17 7 7 17" />
+              </svg>
+            </button>
+          </header>
+
+          <p class="qr-dialog-copy">
+            @if (record.activo === false) {
+              {{ displayName(record) }} volverá a quedar activo y disponible.
+            } @else {
+              ¿Seguro que quieres eliminar a {{ displayName(record) }}? La cuenta quedará inactiva y podrás reactivarla después.
+            }
+          </p>
+
+          @if (actionError()) {
+            <p class="qr-action-error" role="alert">{{ actionError() }}</p>
+          }
+
+          <div class="qr-dialog-actions">
+            <button type="button" class="qr-retry" appMotionButton [disabled]="actionBusy()" (click)="closeDialog()">
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="qr-cta"
+              [class.is-danger]="record.activo !== false"
+              appMotionButton
+              [disabled]="actionBusy()"
+              (click)="confirmDelete()"
+            >
+              @if (actionBusy()) {
+                Actualizando…
+              } @else {
+                {{ record.activo === false ? 'Reactivar' : 'Eliminar usuario' }}
+              }
+            </button>
+          </div>
+          }
+        }
+      </div>
+    </div>
+  }
+}
+</div>
+}
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<nav class="nav-center nav-dock" #dockNav data-motion-init aria-label="Secciones">
+  <span class="nav-indicator" aria-hidden="true"></span>
+  <ng-container [ngTemplateOutlet]="sectionLinks" />
+</nav>
+
+<ng-template #sectionLinks>
+  @for (item of navItems; track item.id) {
+    <button
+      type="button"
+      class="nav-link"
+      [class.is-active]="item.id === activeSection()"
+      [class.is-on]="item.id === settledSection()"
+      [attr.data-section]="item.id"
+      [attr.aria-current]="item.id === activeSection() ? 'page' : null"
+      [attr.aria-label]="item.label"
+      (click)="selectSection(item.id)"
+    >
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        @switch (item.id) {
+          @case ('panel') {
+            <rect x="4" y="4" width="6.5" height="6.5" rx="1.4" />
+            <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.4" />
+            <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.4" />
+            <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.4" />
+          }
+          @case ('qr') {
+            <rect x="4" y="4" width="6.2" height="6.2" rx="1.1" />
+            <rect x="13.8" y="4" width="6.2" height="6.2" rx="1.1" />
+            <rect x="4" y="13.8" width="6.2" height="6.2" rx="1.1" />
+            <path d="M14 14h2.2v2.2H14zM17.6 14H20v2.2h-2.4zM14 17.6h2.2V20H14zM17.6 17.6H20V20h-2.4z" />
+          }
+          @case ('escaneos') {
+            <path d="M7 5.5H5.7A1.7 1.7 0 0 0 4 7.2V9M17 5.5h1.3A1.7 1.7 0 0 1 20 7.2V9M7 18.5H5.7A1.7 1.7 0 0 1 4 16.8V15M17 18.5h1.3a1.7 1.7 0 0 0 1.7-1.7V15" />
+            <path d="M8 12h8" />
+          }
+          @case ('versiones') {
+            <path d="M12 5 5.5 8.4 12 11.8l6.5-3.4z" />
+            <path d="M5.5 12.2 12 15.6l6.5-3.4" />
+            <path d="M5.5 15.8 12 19.2l6.5-3.4" />
+          }
+          @case ('usuarios') {
+            <circle cx="9.2" cy="9" r="2.4" />
+            <path d="M4.8 17.4c.4-2.3 2.2-3.6 4.4-3.6s4 1.3 4.4 3.6" />
+            <circle cx="16.2" cy="9.4" r="2" />
+            <path d="M15.2 13.9c1.8.2 3.2 1.3 3.6 3.5" />
+          }
+        }
+      </svg>
+      <span class="nav-label">{{ item.label }}</span>
+    </button>
+  }
+</ng-template>
+

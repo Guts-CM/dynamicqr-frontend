@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MotionButtonDirective, MotionCardDirective, MotionListDirective } from '../../../motion/motion.directives';
 import { formatQrDay, qrTypeLabel } from '../../qr/qr-format';
 import { QrResponse, parseQrFecha } from '../../qr/qr-response';
-import { QrService } from '../../service/qr.service';
+import { QrService } from '../../qr/qr.service';
 
 export interface DashboardQrRecord {
   id: string;

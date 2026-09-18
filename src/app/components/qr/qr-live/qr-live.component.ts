@@ -7,18 +7,18 @@ import {
   signal,
 } from '@angular/core';
 import { createTimeline, stagger, utils, type Timeline } from 'animejs';
-import { createQrModules, QR_CENTER, QR_SIZE } from '../../qr-stage/qr-pattern';
+import { createQrModules, QR_CENTER, QR_SIZE } from '../qr-pattern';
 
 const PARTICLE_COUNT = 8;
 const MAX_TILT_FINE = 6.5;
 const MAX_TILT_COARSE = 3.4;
 
 @Component({
-  selector: 'app-dashboard-qr-live',
-  templateUrl: './dashboard-qr-live.component.html',
-  styleUrl: './dashboard-qr-live.component.css',
+  selector: 'app-qr-live',
+  templateUrl: './qr-live.component.html',
+  styleUrl: './qr-live.component.css',
 })
-export class DashboardQrLiveComponent {
+export class QrLiveComponent {
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly destroyRef = inject(DestroyRef);
 

@@ -2,12 +2,12 @@ import { Component, DestroyRef, ElementRef, afterNextRender, inject, signal } fr
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LoginRequest } from '../auth/login-request';
-import { MotionButtonDirective, MotionInputDirective } from '../../motion/motion.directives';
-import { qs, qsa } from '../../motion/motion';
-import { animateInput, animateSection } from '../../motion/ui-motion';
-import { QrStageComponent } from '../qr-stage/qr-stage.component';
-import { AuthService } from '../service/auth.service';
+import { LoginRequest } from '../../auth/login-request';
+import { MotionButtonDirective, MotionInputDirective } from '../../../motion/motion.directives';
+import { qs, qsa } from '../../../motion/motion';
+import { animateInput, animateSection } from '../../../motion/ui-motion';
+import { QrStageComponent } from '../../qr/qr-stage/qr-stage.component';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-login',

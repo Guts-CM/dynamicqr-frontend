@@ -2,7 +2,7 @@ import { Component, input, output } from '@angular/core';
 import {
   QR_EYE_SHAPE_OPTIONS,
   QR_MODULE_SHAPE_OPTIONS,
-} from '../../qr/qr-format';
+} from '../qr-format';
 import {
   QR_BACKGROUND_COLOR_SWATCHES,
   QR_GRADIENT_COLOR_SWATCHES,
@@ -11,7 +11,7 @@ import {
   paletteMatches,
   sameHex,
   type QrStylePalette,
-} from '../../qr/qr-style';
+} from '../qr-style';
 
 export type QrStylePickerValue = {
   colorModulos: string;

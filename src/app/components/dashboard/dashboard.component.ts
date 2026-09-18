@@ -11,14 +11,13 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MotionButtonDirective } from '../../motion/motion.directives';
 import { MotionService, qs, qsa, type MotionTeardown } from '../../motion/motion';
 import { MOTION } from '../../motion/motion-tokens';
 import { animateNavGlow, animateNavIndicator, animateSection, pulseElement } from '../../motion/ui-motion';
 import { AuthService } from '../service/auth.service';
 import { DashboardChartCardComponent } from './dashboard-chart-card/dashboard-chart-card.component';
-import { DashboardQrSectionComponent } from './dashboard-qr-section/dashboard-qr-section.component';
 import { DashboardRecordsCardComponent } from './dashboard-records-card/dashboard-records-card.component';
 import { DashboardReservedCardComponent } from './dashboard-reserved-card/dashboard-reserved-card.component';
 import { DashboardUserCardComponent } from './dashboard-user-card/dashboard-user-card.component';
@@ -31,7 +30,6 @@ import { DashboardUserCardComponent } from './dashboard-user-card/dashboard-user
     DashboardChartCardComponent,
     DashboardReservedCardComponent,
     DashboardRecordsCardComponent,
-    DashboardQrSectionComponent,
     MotionButtonDirective,
   ],
   templateUrl: './dashboard.component.html',
@@ -43,13 +41,13 @@ import { DashboardUserCardComponent } from './dashboard-user-card/dashboard-user
 export class DashboardComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly injector = inject(Injector);
   private readonly destroyRef = inject(DestroyRef);
   private readonly desktopNav = viewChild<ElementRef<HTMLElement>>('desktopNav');
   private readonly dockNav = viewChild<ElementRef<HTMLElement>>('dockNav');
-  protected readonly qrSection = viewChild(DashboardQrSectionComponent);
 
   private observers: ResizeObserver[] = [];
   private glowStops: MotionTeardown[] = [];
@@ -71,6 +69,12 @@ export class DashboardComponent {
   protected readonly settledSection = signal<(typeof this.navItems)[number]['id']>('panel');
 
   constructor() {
+    const section = this.route.snapshot.queryParamMap.get('section');
+    if (section === 'escaneos' || section === 'versiones') {
+      this.activeSection.set(section);
+      this.settledSection.set(section);
+    }
+
     afterNextRender(() => this.bootMotion());
 
     effect(() => {
@@ -90,6 +94,16 @@ export class DashboardComponent {
   }
 
   protected selectSection(id: (typeof this.navItems)[number]['id']): void {
+    if (id === 'usuarios') {
+      void this.router.navigateByUrl('/usuarios');
+      return;
+    }
+
+    if (id === 'qr') {
+      void this.router.navigateByUrl('/qr');
+      return;
+    }
+
     if (this.activeSection() === id) {
       return;
     }
@@ -101,24 +115,11 @@ export class DashboardComponent {
   }
 
   protected creatingLocked(): boolean {
-    const section = this.qrSection();
-    return this.activeSection() === 'qr' && !!section && (section.mode() === 'create' || section.transitioning());
+    return false;
   }
 
   protected startCreate(): void {
-    if (this.creatingLocked()) {
-      return;
-    }
-
-    if (this.activeSection() !== 'qr') {
-      this.selectSection('qr');
-      afterNextRender(() => {
-        requestAnimationFrame(() => this.qrSection()?.openCreate());
-      }, { injector: this.injector });
-      return;
-    }
-
-    this.qrSection()?.openCreate();
+    void this.router.navigateByUrl('/qr?create=1');
   }
 
   protected signOut(): void {
@@ -149,10 +150,6 @@ export class DashboardComponent {
   }
 
   private queuePanelEntrance(id: (typeof this.navItems)[number]['id']): void {
-    if (id === 'qr') {
-      return;
-    }
-
     afterNextRender(() => this.playPanelEntrance(), { injector: this.injector });
   }
 

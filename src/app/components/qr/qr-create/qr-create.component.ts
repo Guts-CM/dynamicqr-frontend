@@ -2,7 +2,7 @@ import { Component, DestroyRef, computed, inject, input, output, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MotionButtonDirective, MotionCardDirective, MotionInputDirective } from '../../../motion/motion.directives';
-import { QR_TYPE_OPTIONS, qrShapeLabel, qrTypeLabel } from '../../qr/qr-format';
+import { QR_TYPE_OPTIONS, qrShapeLabel, qrTypeLabel } from '../qr-format';
 import {
   diamondPoints,
   eyePupilRadius,
@@ -11,18 +11,18 @@ import {
   isCircleModule,
   isDiamondModule,
   modulePreviewRadius,
-} from '../../qr/qr-style';
-import { QR_FINDER_ORIGINS, QR_SIZE, createQrModules } from '../../qr-stage/qr-pattern';
-import { QrCreatePayload } from '../../service/qr.service';
+} from '../qr-style';
+import { QR_FINDER_ORIGINS, QR_SIZE, createQrModules } from '../qr-pattern';
+import { QrCreatePayload } from '../qr.service';
 import { QrStylePickerComponent, type QrStylePickerValue } from '../qr-style-picker/qr-style-picker.component';
 
 @Component({
-  selector: 'app-dashboard-qr-create',
+  selector: 'app-qr-create',
   imports: [ReactiveFormsModule, MotionButtonDirective, MotionCardDirective, MotionInputDirective, QrStylePickerComponent],
-  templateUrl: './dashboard-qr-create.component.html',
-  styleUrl: './dashboard-qr-create.component.css',
+  templateUrl: './qr-create.component.html',
+  styleUrl: './qr-create.component.css',
 })
-export class DashboardQrCreateComponent {
+export class QrCreateComponent {
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 

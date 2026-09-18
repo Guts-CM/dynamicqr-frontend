@@ -4,7 +4,7 @@ import { MotionCardDirective } from '../../../motion/motion.directives';
 import { qsa } from '../../../motion/motion';
 import { animateChartBars } from '../../../motion/ui-motion';
 import { QrResponse, parseQrFecha } from '../../qr/qr-response';
-import { QrService } from '../../service/qr.service';
+import { QrService } from '../../qr/qr.service';
 
 export interface MonthlyQrCount {
   key: string;

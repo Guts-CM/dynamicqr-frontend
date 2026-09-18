@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -5,25 +6,33 @@ import {
   ElementRef,
   HostListener,
   NgZone,
+  afterNextRender,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
+  viewChild,
 } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { switchMap } from 'rxjs';
 import { MotionButtonDirective, MotionCardDirective, MotionInputDirective } from '../../../motion/motion.directives';
-import { killMotion, qs, qsa } from '../../../motion/motion';
+import { MotionService, killMotion, qs, qsa, type MotionTeardown } from '../../../motion/motion';
 import { MOTION } from '../../../motion/motion-tokens';
 import {
   animateList,
   animateModal,
+  animateNavGlow,
+  animateNavIndicator,
   animateSection,
   animateWorkspaceIn,
   animateWorkspaceOut,
   pulseElement,
   revealTargets,
 } from '../../../motion/ui-motion';
+import { AuthService } from '../../service/auth.service';
 import {
   QR_TYPE_OPTIONS,
   formatQrCodeId,
@@ -36,10 +45,10 @@ import {
   qrFileSlug,
   qrShapeLabel,
   qrTypeLabel,
-} from '../../qr/qr-format';
-import { QrResponse, parseQrFecha } from '../../qr/qr-response';
-import { QrCreatePayload, QrService } from '../../service/qr.service';
-import { DashboardQrCreateComponent } from '../dashboard-qr-create/dashboard-qr-create.component';
+} from '../qr-format';
+import { QrResponse, parseQrFecha } from '../qr-response';
+import { QrCreateComponent } from '../qr-create/qr-create.component';
+import { QrCreatePayload, QrService } from '../qr.service';
 import { QrStylePickerComponent, type QrStylePickerValue } from '../qr-style-picker/qr-style-picker.component';
 
 type QrDialog = 'edit' | 'delete' | null;
@@ -51,28 +60,43 @@ type StyleSwatch = {
 };
 
 @Component({
-  selector: 'app-dashboard-qr-section',
+  selector: 'app-qr',
   imports: [
+    NgTemplateOutlet,
     ReactiveFormsModule,
     MotionButtonDirective,
     MotionCardDirective,
     MotionInputDirective,
-    DashboardQrCreateComponent,
+    QrCreateComponent,
     QrStylePickerComponent,
   ],
-  templateUrl: './dashboard-qr-section.component.html',
-  styleUrl: './dashboard-qr-section.component.css',
+  templateUrl: './qr.component.html',
+  styleUrl: './qr.component.css',
   host: {
+    class: 'block min-h-dvh',
     '[class.is-switching]': 'transitioning()',
   },
 })
-export class DashboardQrSectionComponent {
+export class QrComponent {
   private readonly qrService = inject(QrService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly motion = inject(MotionService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly zone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly fb = inject(FormBuilder);
+  private readonly desktopNav = viewChild<ElementRef<HTMLElement>>('desktopNav');
+  private readonly dockNav = viewChild<ElementRef<HTMLElement>>('dockNav');
+
+  private observers: ResizeObserver[] = [];
+  private glowStops: MotionTeardown[] = [];
+  private navReady = false;
+  private navFrame = 0;
+  private navMove = 0;
+  private navMovedAt = 0;
 
   private svgObjectUrl: string | null = null;
   private svgRequest = 0;
@@ -143,8 +167,43 @@ export class DashboardQrSectionComponent {
     };
   });
 
+  protected readonly navItems = [
+    { id: 'panel', label: 'Panel' },
+    { id: 'qr', label: 'QR' },
+    { id: 'escaneos', label: 'Escaneos' },
+    { id: 'versiones', label: 'Versiones' },
+    { id: 'usuarios', label: 'Usuarios' },
+  ] as const;
+
+  protected readonly activeSection = signal<(typeof this.navItems)[number]['id']>('qr');
+  protected readonly settledSection = signal<(typeof this.navItems)[number]['id']>('qr');
+  protected readonly dateLabel = new Date().toLocaleDateString('es-MX', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
   constructor() {
+    afterNextRender(() => {
+      this.bootMotion();
+      if (this.route.snapshot.queryParamMap.get('create') === '1') {
+        this.openCreate();
+      }
+    });
+
+    effect(() => {
+      this.motion.reduced();
+      untracked(() => {
+        if (this.navReady) {
+          this.setupNavGlow();
+        }
+      });
+    });
+
     this.destroyRef.onDestroy(() => {
+      cancelAnimationFrame(this.navFrame);
+      this.observers.forEach((observer) => observer.disconnect());
+      this.stopNavGlow();
       this.revokeSvg();
       window.clearTimeout(this.copiedTimer);
       window.clearTimeout(this.dialogTimer);
@@ -156,6 +215,37 @@ export class DashboardQrSectionComponent {
       this.editTipo.set(this.editForm.controls.tipo.value);
     });
     this.load();
+  }
+
+  protected creatingLocked(): boolean {
+    return this.mode() === 'create' || this.transitioning();
+  }
+
+  protected startCreate(): void {
+    this.openCreate();
+  }
+
+  protected selectSection(id: (typeof this.navItems)[number]['id']): void {
+    if (id === 'qr') {
+      return;
+    }
+
+    if (id === 'usuarios') {
+      void this.router.navigateByUrl('/usuarios');
+      return;
+    }
+
+    const url = id === 'panel' ? '/dashboard' : `/dashboard?section=${id}`;
+    void this.router.navigateByUrl(url);
+  }
+
+  protected goDashboard(): void {
+    void this.router.navigateByUrl('/dashboard');
+  }
+
+  protected signOut(): void {
+    this.authService.logout();
+    void this.router.navigateByUrl('/login');
   }
 
   @HostListener('document:keydown.escape')
@@ -325,7 +415,7 @@ export class DashboardQrSectionComponent {
   private workspaceRoot(): HTMLElement | null {
     return qs<HTMLElement>(
       this.host.nativeElement,
-      this.mode() === 'create' ? 'app-dashboard-qr-create' : '.qr-workspace',
+      this.mode() === 'create' ? 'app-qr-create' : '.qr-workspace',
     );
   }
 
@@ -839,5 +929,93 @@ export class DashboardQrSectionComponent {
         { targets: qsa(detail, '[data-qr-motion]'), y: 10, duration: 420, stagger: 54, at: 0 },
       ]);
     });
+  }
+
+  private bootMotion(): void {
+    this.playEntrance();
+    this.setupNav();
+    this.navReady = true;
+    this.syncIndicators(true);
+    this.setupNavGlow();
+  }
+
+  private playEntrance(): void {
+    const root = this.host.nativeElement as HTMLElement;
+    const navbar = qs<HTMLElement>(root, '.navbar');
+    const welcome = qs<HTMLElement>(root, '.welcome');
+    const dock = qs<HTMLElement>(root, '.nav-dock');
+    const host = qs<HTMLElement>(root, '.qr-host');
+
+    animateSection([
+      ...(navbar ? [{ targets: navbar, y: -8, duration: 480, at: 0 }] : []),
+      ...(welcome ? [{ targets: welcome, y: 12, duration: 520, at: 70 }] : []),
+      ...(host ? [{ targets: host, y: 16, duration: 560, at: 140 }] : []),
+      ...(dock ? [{ targets: dock, y: 10, duration: 420, at: 220 }] : []),
+    ]);
+  }
+
+  private setupNav(): void {
+    const navs = this.navElements();
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    this.observers = navs.map((nav) => {
+      const observer = new ResizeObserver(() => {
+        if (performance.now() - this.navMovedAt < MOTION.duration.nav + 80) {
+          return;
+        }
+
+        this.syncIndicators(true, this.navMove);
+      });
+      observer.observe(nav);
+      return observer;
+    });
+  }
+
+  private syncIndicators(instant = false, move = this.navMove): void {
+    const section = this.activeSection();
+
+    for (const nav of this.navElements()) {
+      if (!nav.offsetWidth) {
+        continue;
+      }
+
+      const indicator = qs<HTMLElement>(nav, '.nav-indicator');
+      const active = qs<HTMLElement>(nav, `.nav-link[data-section="${section}"]`);
+      if (!indicator || !active) {
+        continue;
+      }
+
+      animateNavIndicator(indicator, active, nav, instant, () => {
+        if (this.navMove === move) {
+          this.settledSection.set(section);
+        }
+      });
+      nav.classList.add('has-indicator');
+    }
+  }
+
+  private setupNavGlow(): void {
+    this.stopNavGlow();
+    this.glowStops = this.navElements()
+      .map((nav) => qs<HTMLElement>(nav, '.nav-indicator'))
+      .filter((indicator): indicator is HTMLElement => Boolean(indicator))
+      .map((indicator) =>
+        animateNavGlow(indicator, {
+          enabled: () => this.motion.enabled(),
+        }),
+      );
+  }
+
+  private stopNavGlow(): void {
+    this.glowStops.forEach((stop) => stop());
+    this.glowStops = [];
+  }
+
+  private navElements(): HTMLElement[] {
+    return [this.desktopNav()?.nativeElement, this.dockNav()?.nativeElement].filter(
+      (node): node is HTMLElement => Boolean(node),
+    );
   }
 }
