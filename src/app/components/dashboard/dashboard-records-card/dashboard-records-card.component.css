@@ -1,7 +1,19 @@
 @import "../dashboard-card.css";
 
-.records-card {
+:host(.cell-records) {
+  display: block;
+  height: max-content;
   min-height: 22rem;
+}
+
+.records-card {
+  height: auto;
+  min-height: 22rem;
+}
+
+.card-body {
+  flex: none;
+  min-height: auto;
 }
 
 .records-status {

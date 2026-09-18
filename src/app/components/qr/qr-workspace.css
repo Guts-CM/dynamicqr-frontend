@@ -3,7 +3,7 @@
 :host {
   display: block;
   height: 100%;
-  min-height: 28rem;
+  min-height: 0;
 }
 
 :host.is-switching {
@@ -12,27 +12,33 @@
 
 .qr-workspace {
   height: 100%;
-  min-height: inherit;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .qr-section {
   display: grid;
   grid-template-columns: minmax(16.5rem, 0.34fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   gap: 0.95rem;
   height: 100%;
-  min-height: inherit;
+  min-height: 0;
   align-items: stretch;
 }
 
 .qr-list-card,
 .qr-detail-card,
 .qr-state-card {
-  min-height: 28rem;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .qr-list-card .card-body,
 .qr-detail-card .card-body {
   overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .count-chip,
@@ -559,6 +565,7 @@
   width: min(100%, 38rem);
   max-height: min(88dvh, 52rem);
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 1.15rem 1.2rem 1.2rem;
   border-radius: 1.45rem;
   border: 1px solid color-mix(in srgb, var(--color-limed-spruce-200) 16%, transparent);

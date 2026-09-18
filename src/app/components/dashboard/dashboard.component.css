@@ -1,15 +1,20 @@
 :host {
   display: block;
-  min-height: 100dvh;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background: var(--color-limed-spruce-950);
   color: var(--color-limed-spruce-50);
 }
 
 .dash {
   position: relative;
-  min-height: 100dvh;
-  padding: 0.85rem;
-  overflow-x: clip;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: max(0.85rem, env(safe-area-inset-top, 0px)) max(0.85rem, env(safe-area-inset-right, 0px)) max(0.85rem, env(safe-area-inset-bottom, 0px)) max(0.85rem, env(safe-area-inset-left, 0px));
+  overflow: hidden;
 }
 
 .dash-atmosphere {
@@ -63,8 +68,9 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-rows: auto 1fr;
-  min-height: calc(100dvh - 1.7rem);
+  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
   border-radius: 1.75rem;
   border: 1px solid color-mix(in srgb, var(--color-limed-spruce-200) 14%, transparent);
   background: color-mix(in srgb, var(--color-limed-spruce-900) 42%, transparent);
@@ -299,6 +305,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
   padding: 0 1.1rem 1.15rem;
 }
 
@@ -308,6 +315,7 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
 }
 
 .welcome {
@@ -315,6 +323,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 1rem;
+  flex: none;
   margin: 0.15rem 0 1.15rem;
 }
 
@@ -395,8 +404,28 @@
   grid-template-areas:
     "user chart reserved"
     "records records records";
+  grid-auto-rows: minmax(22rem, auto);
   gap: 0.95rem;
   align-items: stretch;
+  align-content: start;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.grid > .cell-user,
+.grid > .cell-chart,
+.grid > .cell-reserved {
+  min-width: 0;
+  min-height: 22rem;
+  height: auto;
+}
+
+.grid > .cell-records {
+  min-width: 0;
+  min-height: 22rem;
+  height: max-content;
 }
 
 .cell-user { grid-area: user; }
@@ -407,7 +436,9 @@
 .qr-host {
   display: block;
   flex: 1;
-  min-height: 28rem;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 1199px) {
@@ -434,7 +465,7 @@
   }
 
   .dash {
-    padding: 0.65rem;
+    padding: max(0.65rem, env(safe-area-inset-top, 0px)) max(0.65rem, env(safe-area-inset-right, 0px)) max(0.65rem, env(safe-area-inset-bottom, 0px)) max(0.65rem, env(safe-area-inset-left, 0px));
   }
 
   .grid {
@@ -444,16 +475,25 @@
       "chart chart"
       "records records";
     gap: 0.75rem;
+    grid-auto-rows: minmax(20rem, auto);
+  }
+
+  .grid > .cell-user,
+  .grid > .cell-chart,
+  .grid > .cell-reserved,
+  .grid > .cell-records {
+    min-height: 20rem;
   }
 }
 
 @media (max-width: 699px) {
   .dash {
     padding: 0;
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   .dash-shell {
-    min-height: 100dvh;
+    min-height: 0;
     border-radius: 0;
     border: 0;
   }
@@ -514,7 +554,7 @@
   }
 
   .dash-body {
-    padding: 0 0.85rem 1.15rem;
+    padding: 0 0.85rem calc(5.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   .welcome {
@@ -534,11 +574,14 @@
       "chart"
       "reserved"
       "records";
+    grid-auto-rows: minmax(20rem, auto);
   }
 
-  .cell-records,
-  .qr-host {
-    padding-bottom: 4.75rem;
+}
+
+@media (min-width: 1200px) and (min-height: 900px) {
+  .grid {
+    grid-template-rows: minmax(22rem, 1fr) minmax(22rem, auto);
   }
 }
 

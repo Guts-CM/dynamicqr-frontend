@@ -15,7 +15,7 @@ import { AuthService } from '../../service/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   host: {
-    class: 'block min-h-dvh',
+    class: 'block',
   },
 })
 export class LoginComponent {

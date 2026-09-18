@@ -50,18 +50,15 @@ export class AppComponent {
         this.onNavigationAbort();
       });
 
-    afterNextRender(() => {
-      if (this.hasEntered) {
-        return;
-      }
+    afterNextRender(() => this.enterRoutedView(this.router.url, { initial: true, direction: 0 }));
+  }
 
-      this.hasEntered = true;
-      this.currentUrl = this.router.url;
-      const host = this.routedHost();
-      if (host) {
-        this.transitions.animateSectionEnter(host, { initial: true, direction: 0 });
-      }
-    });
+  protected onOutletActivate(): void {
+    if (this.hasEntered) {
+      return;
+    }
+
+    this.enterRoutedView(this.router.url, { initial: true, direction: 0 });
   }
 
   private onNavigationStart(url: string): void {
@@ -83,24 +80,19 @@ export class AppComponent {
     const same = this.transitions.sameSection(from, url);
     this.currentUrl = url;
 
-    if (!this.hasEntered || same) {
+    if (this.hasEntered && same) {
       return;
     }
 
     afterNextRender(
       () => {
-        if (!this.transitions.isCurrent(generation)) {
+        if (this.hasEntered && (same || !this.transitions.isCurrent(generation))) {
           return;
         }
 
-        const host = this.routedHost();
-        if (!host) {
-          return;
-        }
-
-        this.transitions.animateSectionEnter(host, {
-          direction: this.transitions.direction(from, url),
-          initial: false,
+        this.enterRoutedView(url, {
+          initial: !this.hasEntered,
+          direction: this.hasEntered ? this.transitions.direction(from, url) : 0,
         });
       },
       { injector: this.injector },
@@ -112,6 +104,21 @@ export class AppComponent {
     if (host) {
       this.transitions.resetSectionState(host);
     }
+  }
+
+  private enterRoutedView(url: string, options: { initial: boolean; direction: -1 | 0 | 1 }): void {
+    if (options.initial && this.hasEntered) {
+      return;
+    }
+
+    const host = this.routedHost();
+    if (!host) {
+      return;
+    }
+
+    this.hasEntered = true;
+    this.currentUrl = url;
+    this.transitions.animateSectionEnter(host, options);
   }
 
   private routedHost(): HTMLElement | null {

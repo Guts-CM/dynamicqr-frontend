@@ -107,9 +107,10 @@ export class SectionTransitionService {
     resetTransform(root);
     for (const layer of qsa<HTMLElement>(
       root,
-      '.navbar, .welcome, .qr-host, .grid > *, .nav-dock, .login-visual, .glass-ornament, .login-card, .login-header, .field, .login-options, .btn-primary, .login-divider, .social-row, .login-footer',
+      '.navbar, .welcome, .qr-host, .grid > *, .nav-dock, .login-visual, .glass-ornament, .login-card, .login-header, .field, .login-options, .btn-primary, .login-divider, .social-row, .login-footer, [data-motion-init]',
     )) {
       resetTransform(layer);
+      layer.removeAttribute('data-motion-init');
     }
   }
 
