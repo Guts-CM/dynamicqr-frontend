@@ -289,12 +289,18 @@
 }
 
 .dash-body {
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   padding: 0 1.1rem 1.15rem;
 }
 
 .main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-width: 0;
+  min-height: 0;
 }
 
 .welcome {
@@ -366,6 +372,11 @@
   box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 16%, transparent);
 }
 
+.cta:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .cta [data-motion-icon] {
   display: inline-flex;
   line-height: 1;
@@ -385,6 +396,12 @@
 .cell-chart { grid-area: chart; }
 .cell-reserved { grid-area: reserved; }
 .cell-records { grid-area: records; }
+
+.qr-host {
+  display: block;
+  flex: 1;
+  min-height: 28rem;
+}
 
 @media (max-width: 1199px) {
   .navbar {
@@ -512,7 +529,8 @@
       "records";
   }
 
-  .cell-records {
+  .cell-records,
+  .qr-host {
     padding-bottom: 4.75rem;
   }
 }

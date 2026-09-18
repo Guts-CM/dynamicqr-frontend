@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Injector,
   afterNextRender,
   effect,
   inject,
@@ -17,6 +18,7 @@ import { MOTION } from '../../motion/motion-tokens';
 import { animateNavGlow, animateNavIndicator, animateSection, pulseElement } from '../../motion/ui-motion';
 import { AuthService } from '../service/auth.service';
 import { DashboardChartCardComponent } from './dashboard-chart-card/dashboard-chart-card.component';
+import { DashboardQrSectionComponent } from './dashboard-qr-section/dashboard-qr-section.component';
 import { DashboardRecordsCardComponent } from './dashboard-records-card/dashboard-records-card.component';
 import { DashboardReservedCardComponent } from './dashboard-reserved-card/dashboard-reserved-card.component';
 import { DashboardUserCardComponent } from './dashboard-user-card/dashboard-user-card.component';
@@ -29,6 +31,7 @@ import { DashboardUserCardComponent } from './dashboard-user-card/dashboard-user
     DashboardChartCardComponent,
     DashboardReservedCardComponent,
     DashboardRecordsCardComponent,
+    DashboardQrSectionComponent,
     MotionButtonDirective,
   ],
   templateUrl: './dashboard.component.html',
@@ -42,9 +45,11 @@ export class DashboardComponent {
   private readonly router = inject(Router);
   private readonly motion = inject(MotionService);
   private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly injector = inject(Injector);
   private readonly destroyRef = inject(DestroyRef);
   private readonly desktopNav = viewChild<ElementRef<HTMLElement>>('desktopNav');
   private readonly dockNav = viewChild<ElementRef<HTMLElement>>('dockNav');
+  protected readonly qrSection = viewChild(DashboardQrSectionComponent);
 
   private observers: ResizeObserver[] = [];
   private glowStops: MotionTeardown[] = [];
@@ -92,6 +97,28 @@ export class DashboardComponent {
     this.activeSection.set(id);
     this.pulseNavIcon(id);
     this.queueIndicatorSync();
+    this.queuePanelEntrance(id);
+  }
+
+  protected creatingLocked(): boolean {
+    const section = this.qrSection();
+    return this.activeSection() === 'qr' && !!section && (section.mode() === 'create' || section.transitioning());
+  }
+
+  protected startCreate(): void {
+    if (this.creatingLocked()) {
+      return;
+    }
+
+    if (this.activeSection() !== 'qr') {
+      this.selectSection('qr');
+      afterNextRender(() => {
+        requestAnimationFrame(() => this.qrSection()?.openCreate());
+      }, { injector: this.injector });
+      return;
+    }
+
+    this.qrSection()?.openCreate();
   }
 
   protected signOut(): void {
@@ -111,15 +138,31 @@ export class DashboardComponent {
     const root = this.host.nativeElement as HTMLElement;
     const navbar = qs<HTMLElement>(root, '.navbar');
     const welcome = qs<HTMLElement>(root, '.welcome');
-    const cells = qsa<HTMLElement>(root, '.grid > *');
     const dock = qs<HTMLElement>(root, '.nav-dock');
 
     animateSection([
       ...(navbar ? [{ targets: navbar, y: -8, duration: 480, at: 0 }] : []),
       ...(welcome ? [{ targets: welcome, y: 12, duration: 520, at: 70 }] : []),
-      ...(cells.length ? [{ targets: cells, y: 16, duration: 560, stagger: 70, at: 140 }] : []),
+      ...this.panelBeats(140),
       ...(dock ? [{ targets: dock, y: 10, duration: 420, at: 220 }] : []),
     ]);
+  }
+
+  private queuePanelEntrance(id: (typeof this.navItems)[number]['id']): void {
+    if (id === 'qr') {
+      return;
+    }
+
+    afterNextRender(() => this.playPanelEntrance(), { injector: this.injector });
+  }
+
+  private playPanelEntrance(): void {
+    animateSection(this.panelBeats(0));
+  }
+
+  private panelBeats(at: number) {
+    const cells = qsa<HTMLElement>(this.host.nativeElement as HTMLElement, '.grid > *');
+    return cells.length ? [{ targets: cells, y: 16, duration: 560, stagger: 70, at }] : [];
   }
 
   private setupNav(): void {

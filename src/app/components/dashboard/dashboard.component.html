@@ -35,8 +35,16 @@
       <main class="main">
         <header class="welcome" data-motion-init>
           <div>
-            <h1>Bienvenido de nuevo, <span>{{ displayName }}</span></h1>
-            <p>Gestiona, genera y da seguimiento a tus códigos QR desde un solo lugar.</p>
+            @if (activeSection() === 'qr' && qrSection()?.mode() === 'create') {
+              <h1>Nuevo código <span>QR</span></h1>
+              <p>Define el destino y el estilo. El código se genera al guardar.</p>
+            } @else if (activeSection() === 'qr') {
+              <h1>Códigos <span>QR</span></h1>
+              <p>Selecciona un código para revisar su destino, auditoría y vista previa.</p>
+            } @else {
+              <h1>Bienvenido de nuevo, <span>{{ displayName }}</span></h1>
+              <p>Gestiona, genera y da seguimiento a tus códigos QR desde un solo lugar.</p>
+            }
           </div>
           <div class="welcome-meta">
             <span class="date-chip">
@@ -46,19 +54,29 @@
               </svg>
               17 sep 2026
             </span>
-            <button type="button" class="cta" appMotionButton="plus">
+            <button
+              type="button"
+              class="cta"
+              appMotionButton="plus"
+              [disabled]="creatingLocked()"
+              (click)="startCreate()"
+            >
               <span data-motion-icon aria-hidden="true">+</span>
               Nuevo código QR
             </button>
           </div>
         </header>
 
-        <div class="grid">
-          <app-dashboard-user-card class="cell-user" data-motion-init (logout)="signOut()" />
-          <app-dashboard-chart-card class="cell-chart" data-motion-init />
-          <app-dashboard-reserved-card class="cell-reserved" data-motion-init />
-          <app-dashboard-records-card class="cell-records" data-motion-init />
-        </div>
+        @if (activeSection() === 'qr') {
+          <app-dashboard-qr-section class="qr-host" />
+        } @else {
+          <div class="grid">
+            <app-dashboard-user-card class="cell-user" data-motion-init (logout)="signOut()" />
+            <app-dashboard-chart-card class="cell-chart" data-motion-init />
+            <app-dashboard-reserved-card class="cell-reserved" data-motion-init />
+            <app-dashboard-records-card class="cell-records" data-motion-init />
+          </div>
+        }
       </main>
     </div>
   </div>

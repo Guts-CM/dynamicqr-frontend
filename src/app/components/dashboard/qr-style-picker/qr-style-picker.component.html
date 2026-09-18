@@ -1,0 +1,257 @@
+<div class="qr-style-picker" [class.is-disabled]="disabled()">
+  <div class="qr-field">
+    <p class="qr-field-label">Paletas</p>
+    <div class="qr-palette-grid" role="list">
+      @for (palette of palettes; track palette.id) {
+        <button
+          type="button"
+          class="qr-palette"
+          role="listitem"
+          [class.is-on]="isPaletteOn(palette)"
+          [disabled]="disabled()"
+          [attr.aria-label]="'Paleta ' + palette.label"
+          (click)="applyPalette(palette)"
+        >
+          <span class="qr-palette-dots" aria-hidden="true">
+            <i [style.background]="palette.colorModulos"></i>
+            <i [style.background]="palette.colorFondo"></i>
+            <i [style.background]="palette.colorGradiente"></i>
+          </span>
+          <span>{{ palette.label }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="qr-color-grid">
+    <div class="qr-field">
+      <label class="qr-field-label">Color de módulos</label>
+      <div class="qr-swatch-row">
+        @for (swatch of moduleSwatches; track swatch) {
+          <button
+            type="button"
+            class="qr-color-dot"
+            [class.is-on]="isColorOn(value().colorModulos, swatch)"
+            [style.background]="swatch"
+            [attr.aria-label]="'Módulos ' + swatch"
+            [disabled]="disabled()"
+            (click)="setColor('colorModulos', swatch)"
+          ></button>
+        }
+        <label class="qr-color-dot is-custom" [class.is-on]="isCustomColor(value().colorModulos, moduleSwatches)">
+          <input
+            type="color"
+            [disabled]="disabled()"
+            [value]="value().colorModulos"
+            (input)="onCustomColor('colorModulos', $event)"
+            aria-label="Color personalizado de módulos"
+          />
+        </label>
+      </div>
+      <p class="qr-color-hex">{{ value().colorModulos }}</p>
+    </div>
+
+    <div class="qr-field">
+      <div class="qr-field-head">
+        <label class="qr-field-label">Color de fondo</label>
+        <button
+          type="button"
+          class="qr-chip-btn"
+          [class.is-on]="value().transparent"
+          [attr.aria-pressed]="value().transparent"
+          [disabled]="disabled()"
+          (click)="toggleTransparent()"
+        >
+          Sin color
+        </button>
+      </div>
+      <div class="qr-swatch-row" [class.is-disabled]="value().transparent">
+        @for (swatch of backgroundSwatches; track swatch) {
+          <button
+            type="button"
+            class="qr-color-dot"
+            [class.is-on]="!value().transparent && isColorOn(value().colorFondo, swatch)"
+            [style.background]="swatch"
+            [attr.aria-label]="'Fondo ' + swatch"
+            [disabled]="disabled() || value().transparent"
+            (click)="setColor('colorFondo', swatch)"
+          ></button>
+        }
+        <label
+          class="qr-color-dot is-custom"
+          [class.is-on]="!value().transparent && isCustomColor(value().colorFondo, backgroundSwatches)"
+        >
+          <input
+            type="color"
+            [disabled]="disabled() || value().transparent"
+            [value]="value().colorFondo"
+            (input)="onCustomColor('colorFondo', $event)"
+            aria-label="Color personalizado de fondo"
+          />
+        </label>
+      </div>
+      <p class="qr-color-hex">{{ value().transparent ? 'Transparente' : value().colorFondo }}</p>
+    </div>
+
+    <div class="qr-field">
+      <label class="qr-field-label">Color de degradado</label>
+      <div class="qr-swatch-row">
+        @for (swatch of gradientSwatches; track swatch) {
+          <button
+            type="button"
+            class="qr-color-dot"
+            [class.is-on]="isColorOn(value().colorGradiente, swatch)"
+            [style.background]="swatch"
+            [attr.aria-label]="'Degradado ' + swatch"
+            [disabled]="disabled()"
+            (click)="setColor('colorGradiente', swatch)"
+          ></button>
+        }
+        <label class="qr-color-dot is-custom" [class.is-on]="isCustomColor(value().colorGradiente, gradientSwatches)">
+          <input
+            type="color"
+            [disabled]="disabled()"
+            [value]="value().colorGradiente"
+            (input)="onCustomColor('colorGradiente', $event)"
+            aria-label="Color personalizado de degradado"
+          />
+        </label>
+      </div>
+      <p class="qr-color-hex">{{ value().colorGradiente }}</p>
+    </div>
+  </div>
+
+  <div class="qr-shape-block">
+    <div class="qr-field">
+      <p class="qr-field-label">Forma de módulo</p>
+      <div class="qr-choice-grid" role="radiogroup" aria-label="Forma de módulo">
+        @for (option of moduleShapeOptions; track option.value) {
+          <button
+            type="button"
+            class="qr-choice"
+            role="radio"
+            [class.is-on]="value().formaModulo === option.value"
+            [attr.aria-checked]="value().formaModulo === option.value"
+            [disabled]="disabled()"
+            (click)="setShape('formaModulo', option.value)"
+          >
+            <span class="qr-choice-preview" aria-hidden="true">
+              <svg viewBox="0 0 32 32">
+                @switch (option.value) {
+                  @case ('cuadrado') {
+                    <rect x="5" y="5" width="6" height="6" />
+                    <rect x="13" y="5" width="6" height="6" />
+                    <rect x="21" y="5" width="6" height="6" />
+                    <rect x="5" y="13" width="6" height="6" />
+                    <rect x="13" y="13" width="6" height="6" />
+                    <rect x="21" y="13" width="6" height="6" />
+                    <rect x="5" y="21" width="6" height="6" />
+                    <rect x="13" y="21" width="6" height="6" />
+                    <rect x="21" y="21" width="6" height="6" />
+                  }
+                  @case ('suave') {
+                    <rect x="5" y="5" width="6" height="6" rx="1.2" />
+                    <rect x="13" y="5" width="6" height="6" rx="1.2" />
+                    <rect x="21" y="5" width="6" height="6" rx="1.2" />
+                    <rect x="5" y="13" width="6" height="6" rx="1.2" />
+                    <rect x="13" y="13" width="6" height="6" rx="1.2" />
+                    <rect x="21" y="13" width="6" height="6" rx="1.2" />
+                    <rect x="5" y="21" width="6" height="6" rx="1.2" />
+                    <rect x="13" y="21" width="6" height="6" rx="1.2" />
+                    <rect x="21" y="21" width="6" height="6" rx="1.2" />
+                  }
+                  @case ('redondeado') {
+                    <rect x="5" y="5" width="6" height="6" rx="1.8" />
+                    <rect x="13" y="5" width="6" height="6" rx="1.8" />
+                    <rect x="21" y="5" width="6" height="6" rx="1.8" />
+                    <rect x="5" y="13" width="6" height="6" rx="1.8" />
+                    <rect x="13" y="13" width="6" height="6" rx="1.8" />
+                    <rect x="21" y="13" width="6" height="6" rx="1.8" />
+                    <rect x="5" y="21" width="6" height="6" rx="1.8" />
+                    <rect x="13" y="21" width="6" height="6" rx="1.8" />
+                    <rect x="21" y="21" width="6" height="6" rx="1.8" />
+                  }
+                  @case ('extra_redondeado') {
+                    <rect x="5" y="5" width="6" height="6" rx="2.6" />
+                    <rect x="13" y="5" width="6" height="6" rx="2.6" />
+                    <rect x="21" y="5" width="6" height="6" rx="2.6" />
+                    <rect x="5" y="13" width="6" height="6" rx="2.6" />
+                    <rect x="13" y="13" width="6" height="6" rx="2.6" />
+                    <rect x="21" y="13" width="6" height="6" rx="2.6" />
+                    <rect x="5" y="21" width="6" height="6" rx="2.6" />
+                    <rect x="13" y="21" width="6" height="6" rx="2.6" />
+                    <rect x="21" y="21" width="6" height="6" rx="2.6" />
+                  }
+                  @case ('circulo') {
+                    <circle cx="8" cy="8" r="2.7" />
+                    <circle cx="16" cy="8" r="2.7" />
+                    <circle cx="24" cy="8" r="2.7" />
+                    <circle cx="8" cy="16" r="2.7" />
+                    <circle cx="16" cy="16" r="2.7" />
+                    <circle cx="24" cy="16" r="2.7" />
+                    <circle cx="8" cy="24" r="2.7" />
+                    <circle cx="16" cy="24" r="2.7" />
+                    <circle cx="24" cy="24" r="2.7" />
+                  }
+                  @default {
+                    <polygon points="8,5.2 10.8,8 8,10.8 5.2,8" />
+                    <polygon points="16,5.2 18.8,8 16,10.8 13.2,8" />
+                    <polygon points="24,5.2 26.8,8 24,10.8 21.2,8" />
+                    <polygon points="8,13.2 10.8,16 8,18.8 5.2,16" />
+                    <polygon points="16,13.2 18.8,16 16,18.8 13.2,16" />
+                    <polygon points="24,13.2 26.8,16 24,18.8 21.2,16" />
+                    <polygon points="8,21.2 10.8,24 8,26.8 5.2,24" />
+                    <polygon points="16,21.2 18.8,24 16,26.8 13.2,24" />
+                    <polygon points="24,21.2 26.8,24 24,26.8 21.2,24" />
+                  }
+                }
+              </svg>
+            </span>
+            <span>{{ option.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="qr-field">
+      <p class="qr-field-label">Forma de ojo</p>
+      <div class="qr-choice-grid qr-choice-grid--eyes" role="radiogroup" aria-label="Forma de ojo">
+        @for (option of eyeShapeOptions; track option.value) {
+          <button
+            type="button"
+            class="qr-choice"
+            role="radio"
+            [class.is-on]="value().formaOjo === option.value"
+            [attr.aria-checked]="value().formaOjo === option.value"
+            [disabled]="disabled()"
+            (click)="setShape('formaOjo', option.value)"
+          >
+            <span class="qr-choice-preview" aria-hidden="true">
+              <svg viewBox="0 0 32 32">
+                @switch (option.value) {
+                  @case ('cuadrado') {
+                    <path fill-rule="evenodd" d="M6 6h20v20H6zm4 4h12v12H10z" />
+                    <rect x="12" y="12" width="8" height="8" />
+                  }
+                  @case ('redondeado') {
+                    <path fill-rule="evenodd" d="M10 6h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4zm2 4h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z" />
+                    <rect x="12.5" y="12.5" width="7" height="7" rx="1.4" />
+                  }
+                  @case ('extra_redondeado') {
+                    <path fill-rule="evenodd" d="M11 6h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5V11a5 5 0 0 1 5-5zm2.2 4.2h7.6a2.8 2.8 0 0 1 2.8 2.8v7.6a2.8 2.8 0 0 1-2.8 2.8h-7.6a2.8 2.8 0 0 1-2.8-2.8v-7.6a2.8 2.8 0 0 1 2.8-2.8z" />
+                    <rect x="12.6" y="12.6" width="6.8" height="6.8" rx="2.2" />
+                  }
+                  @default {
+                    <path fill-rule="evenodd" d="M16 6a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12z" />
+                    <circle cx="16" cy="16" r="3.4" />
+                  }
+                }
+              </svg>
+            </span>
+            <span>{{ option.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</div>

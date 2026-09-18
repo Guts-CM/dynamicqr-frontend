@@ -13,6 +13,8 @@ export {
   animateNavGlow,
   animateChartBars,
   pulseElement,
+  animateWorkspaceOut,
+  animateWorkspaceIn,
 } from './ui-motion';
 export {
   MotionButtonDirective,

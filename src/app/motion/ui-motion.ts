@@ -9,6 +9,7 @@ import {
   killMotion,
   prefersReducedMotion,
   qs,
+  qsa,
   resetTransform,
   type MotionTeardown,
 } from './motion';
@@ -584,6 +585,69 @@ export function pulseElement(el: Element | null): JSAnimation | null {
     duration: MOTION.duration.component,
     ease: MOTION.ease.outQuart,
   });
+}
+
+function settleOnce(callback?: () => void): () => void {
+  let settled = false;
+  return () => {
+    if (settled) {
+      return;
+    }
+
+    settled = true;
+    callback?.();
+  };
+}
+
+export function animateWorkspaceOut(root: HTMLElement, onComplete?: () => void): Timeline | JSAnimation | null {
+  const finish = settleOnce(onComplete);
+
+  if (prefersReducedMotion()) {
+    finish();
+    return null;
+  }
+
+  killMotion(root);
+  const animation = animate(root, {
+    opacity: 0,
+    translateY: 10,
+    scale: 0.985,
+    duration: MOTION.duration.component,
+    ease: MOTION.ease.inOutQuart,
+    onComplete: finish,
+  });
+  window.setTimeout(finish, MOTION.duration.component + 160);
+  return animation;
+}
+
+export function animateWorkspaceIn(root: HTMLElement, onComplete?: () => void): Timeline | JSAnimation | null {
+  const finish = settleOnce(() => {
+    revealTargets([root, ...qsa(root, '.card, .qr-item, [data-qr-motion]')]);
+    onComplete?.();
+  });
+
+  if (prefersReducedMotion()) {
+    finish();
+    return null;
+  }
+
+  killMotion(root);
+  utils.set(root, {
+    opacity: 0,
+    translateY: MOTION.shift.section,
+    scale: MOTION.scale.modalFrom,
+  });
+
+  const animation = animate(root, {
+    opacity: 1,
+    translateY: 0,
+    scale: 1,
+    duration: MOTION.duration.section,
+    ease: MOTION.ease.outQuart,
+    onComplete: finish,
+  });
+  window.setTimeout(finish, MOTION.duration.section + 160);
+  return animation;
 }
 
 export function revealTargets(targets: Element[]): void {

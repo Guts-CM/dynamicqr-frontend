@@ -1,0 +1,506 @@
+@if (mode() === 'create') {
+  <app-dashboard-qr-create
+    [busy]="createBusy()"
+    [error]="createError()"
+    [success]="createSuccess()"
+    (cancel)="cancelCreate()"
+    (save)="submitCreate($event)"
+  />
+} @else {
+<div class="qr-workspace">
+@if (loading()) {
+  <div class="qr-section" aria-busy="true" aria-label="Cargando códigos QR">
+    <article class="card qr-list-card">
+      <header class="card-head">
+        <div>
+          <p class="kicker">Inventario</p>
+          <h2 class="title">Códigos QR</h2>
+        </div>
+        <span class="skel skel-badge"></span>
+      </header>
+      <div class="card-body">
+        <ul class="qr-skel-list" aria-hidden="true">
+          @for (row of [1, 2, 3, 4, 5]; track row) {
+            <li class="qr-skel-item">
+              <span class="skel skel-line skel-line--sm"></span>
+              <span class="skel skel-line"></span>
+              <span class="skel skel-line skel-line--md"></span>
+            </li>
+          }
+        </ul>
+      </div>
+    </article>
+
+    <article class="card qr-detail-card">
+      <header class="card-head">
+        <div>
+          <p class="kicker">Detalle</p>
+          <h2 class="title">Vista del código</h2>
+        </div>
+      </header>
+      <div class="card-body qr-detail-skel">
+        <div class="qr-detail-layout">
+          <div class="qr-skel-fields">
+            <span class="skel skel-line skel-line--sm"></span>
+            <span class="skel skel-line"></span>
+            <span class="skel skel-line skel-line--md"></span>
+            <span class="skel skel-line skel-line--sm"></span>
+            <span class="skel skel-line"></span>
+          </div>
+          <span class="skel skel-preview"></span>
+        </div>
+        <span class="skel skel-block"></span>
+        <span class="skel skel-block skel-block--short"></span>
+      </div>
+    </article>
+  </div>
+} @else if (error()) {
+  <article class="card qr-state-card" appMotionCard>
+    <div class="qr-state">
+      <span class="qr-state-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <rect x="3.6" y="3.6" width="6.8" height="6.8" rx="1.2" />
+          <rect x="13.6" y="3.6" width="6.8" height="6.8" rx="1.2" />
+          <rect x="3.6" y="13.6" width="6.8" height="6.8" rx="1.2" />
+          <path d="M14 14h2.4v2.4H14zM18.2 14H20.6v6.4H14V18.2" />
+        </svg>
+      </span>
+      <h2>No se pudieron cargar los códigos QR</h2>
+      <p>Inténtalo de nuevo. Si el problema continúa, vuelve más tarde.</p>
+      <button type="button" class="qr-retry" appMotionButton (click)="load()">Reintentar</button>
+    </div>
+  </article>
+} @else if (records().length === 0) {
+  <article class="card qr-state-card" appMotionCard>
+    <div class="qr-state">
+      <span class="qr-state-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <rect x="3.6" y="3.6" width="6.8" height="6.8" rx="1.2" />
+          <rect x="13.6" y="3.6" width="6.8" height="6.8" rx="1.2" />
+          <rect x="3.6" y="13.6" width="6.8" height="6.8" rx="1.2" />
+          <path d="M14 14h2.4v2.4H14zM18.2 14H20.6v6.4H14V18.2" />
+        </svg>
+      </span>
+      <h2>Aún no hay códigos QR</h2>
+      <p>Cuando existan códigos en tu cuenta, aparecerán en esta lista para consultarlos.</p>
+      <button type="button" class="qr-cta" appMotionButton="plus" (click)="openCreate()">
+        <span data-motion-icon aria-hidden="true">+</span>
+        Nuevo código QR
+      </button>
+    </div>
+  </article>
+} @else {
+  <div class="qr-section" [class.is-detail]="mobileDetail()">
+    <article class="card qr-list-card" appMotionCard>
+      <header class="card-head">
+        <div>
+          <p class="kicker">Inventario</p>
+          <h2 class="title">Códigos QR</h2>
+        </div>
+        <span class="count-chip">{{ countLabel() }}</span>
+      </header>
+
+      <div class="card-body">
+        <ul class="qr-list" role="listbox" aria-label="Códigos QR disponibles">
+          @for (record of records(); track record.qrId) {
+            <li>
+              <button
+                type="button"
+                class="qr-item"
+                role="option"
+                [class.is-selected]="record.qrId === selectedId()"
+                [class.is-idle]="!record.activo"
+                [attr.aria-selected]="record.qrId === selectedId()"
+                (click)="selectQr(record)"
+              >
+                <span class="qr-item-id">{{ codeId(record) }}</span>
+                <span class="qr-item-name">{{ displayName(record) }}</span>
+                <span class="qr-item-date">Creado {{ createdLabel(record) }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    </article>
+
+    <article class="card qr-detail-card" appMotionCard>
+      @if (!selected()) {
+        <div class="qr-state qr-state--inset">
+          <span class="qr-state-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+              <rect x="3.6" y="3.6" width="6.8" height="6.8" rx="1.2" />
+              <rect x="13.6" y="3.6" width="6.8" height="6.8" rx="1.2" />
+              <rect x="3.6" y="13.6" width="6.8" height="6.8" rx="1.2" />
+              <path d="M14 14h2.4v2.4H14zM18.2 14H20.6v6.4H14V18.2" />
+            </svg>
+          </span>
+          <h2>Selecciona un código QR para ver su detalle</h2>
+          <p>Elige un elemento de la lista para consultar su información, destino y vista previa.</p>
+        </div>
+      } @else {
+        <div class="qr-detail-live">
+          <header class="card-head qr-detail-head">
+            <button type="button" class="qr-back" appMotionButton="back" (click)="backToList()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M15 6.5 9.5 12 15 17.5" />
+              </svg>
+              Códigos
+            </button>
+            <div>
+              <p class="kicker">Detalle</p>
+              <h2 class="title">{{ displayName(selected()!) }}</h2>
+            </div>
+            <div class="qr-detail-actions">
+              <span class="status-chip" [class.is-idle]="!selected()!.activo">
+                <i aria-hidden="true"></i>
+                {{ selected()!.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+              <button
+                type="button"
+                class="icon-btn"
+                appMotionButton
+                aria-label="Editar código QR"
+                [disabled]="actionBusy()"
+                (click)="openEdit()"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M4.8 16.6 16.2 5.2a1.8 1.8 0 0 1 2.5 0l1.1 1.1a1.8 1.8 0 0 1 0 2.5L8.4 20.2 4 21z" />
+                  <path d="m14.8 6.6 2.6 2.6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="icon-btn is-danger"
+                appMotionButton
+                [attr.aria-label]="selected()!.activo ? 'Desactivar código QR' : 'Reactivar código QR'"
+                [disabled]="actionBusy()"
+                (click)="openDelete()"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M5.5 7.2h13" />
+                  <path d="M9.2 7.2V5.8A1.6 1.6 0 0 1 10.8 4.2h2.4A1.6 1.6 0 0 1 14.8 5.8v1.4" />
+                  <path d="M17.4 7.2V18a1.8 1.8 0 0 1-1.8 1.8H8.4A1.8 1.8 0 0 1 6.6 18V7.2" />
+                  <path d="M10.2 10.6v5.2M13.8 10.6v5.2" />
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <div class="card-body qr-detail-body">
+            <div class="qr-detail-layout">
+              <section class="qr-group qr-info" data-qr-motion>
+                <p class="kicker">Información general</p>
+                <dl class="qr-fields">
+                  <div>
+                    <dt>ID del QR</dt>
+                    <dd>{{ codeId(selected()!) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Nombre</dt>
+                    <dd>{{ displayName(selected()!) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Tipo</dt>
+                    <dd>{{ typeLabel(selected()!) }}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section class="qr-preview" data-qr-motion>
+                <p class="kicker">Vista previa</p>
+                <div
+                  class="qr-preview-frame"
+                  [class.is-clear]="isClearBackground(selected()!)"
+                  [style.background]="previewBackground(selected()!) || null"
+                >
+                  @if (svgLoading()) {
+                    <span class="skel skel-qr" aria-hidden="true"></span>
+                    <span class="qr-preview-status">Cargando vista previa…</span>
+                  } @else if (svgError() || !svgSrc()) {
+                    <p class="qr-preview-status">No se pudo mostrar la vista previa.</p>
+                    <button type="button" class="qr-retry qr-retry--ghost" appMotionButton (click)="retrySvg(selected()!)">
+                      Reintentar
+                    </button>
+                  } @else {
+                    <img [src]="svgSrc()!" [alt]="'Código QR ' + displayName(selected()!)" />
+                  }
+                </div>
+                <div class="qr-download">
+                  <button
+                    type="button"
+                    class="qr-retry qr-retry--ghost"
+                    appMotionButton="download"
+                    [disabled]="!svgSrc() || svgLoading() || downloadBusy()"
+                    (click)="downloadQr('svg')"
+                  >
+                    SVG
+                  </button>
+                  <button
+                    type="button"
+                    class="qr-retry qr-retry--ghost"
+                    appMotionButton="download"
+                    [disabled]="!svgSrc() || svgLoading() || downloadBusy()"
+                    (click)="downloadQr('png')"
+                  >
+                    PNG
+                  </button>
+                </div>
+                @if (downloadError()) {
+                  <p class="qr-field-error" role="alert">{{ downloadError() }}</p>
+                }
+              </section>
+
+              @if (hasStyle(selected()!)) {
+                <section class="qr-group qr-style-block" data-qr-motion>
+                  <p class="kicker">Estilo visual</p>
+                  <ul class="qr-style">
+                    @for (swatch of swatches(selected()!); track swatch.label) {
+                      <li>
+                        <span>{{ swatch.label }}</span>
+                        <span class="qr-swatch-value">
+                          <i
+                            class="qr-swatch"
+                            [class.is-empty]="!swatchColor(swatch.color)"
+                            [style.background]="swatchColor(swatch.color) || null"
+                            aria-hidden="true"
+                          ></i>
+                          {{ swatch.value }}
+                        </span>
+                      </li>
+                    }
+                    <li>
+                      <span>Forma de módulo</span>
+                      <strong>{{ moduleShape(selected()!) }}</strong>
+                    </li>
+                    <li>
+                      <span>Forma de ojo</span>
+                      <strong>{{ eyeShape(selected()!) }}</strong>
+                    </li>
+                  </ul>
+                </section>
+              }
+            </div>
+
+            <section class="qr-group" data-qr-motion>
+              <p class="kicker">Destino</p>
+              @if (destination(selected()!)) {
+                <div class="qr-url-row">
+                  <a
+                    class="qr-url"
+                    [href]="destinationHref(selected()!)!"
+                    [title]="destination(selected()!)!"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ destination(selected()!) }}
+                  </a>
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    appMotionButton="copy"
+                    [attr.aria-label]="copied() ? 'Destino copiado' : 'Copiar URL de destino'"
+                    (click)="copyDestination(selected()!, $event.currentTarget)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                      @if (copied()) {
+                        <path d="m6.8 12.2 3.1 3.1 7.3-7.4" />
+                      } @else {
+                        <rect x="8.2" y="8.2" width="10" height="10" rx="1.6" />
+                        <path d="M6.4 15.2H5.8A1.8 1.8 0 0 1 4 13.4V5.8A1.8 1.8 0 0 1 5.8 4h7.6A1.8 1.8 0 0 1 15.2 5.8v.6" />
+                      }
+                    </svg>
+                  </button>
+                </div>
+              } @else {
+                <p class="qr-muted">Sin URL de destino</p>
+              }
+            </section>
+
+            <section class="qr-group qr-audit" data-qr-motion>
+              <p class="kicker">Auditoría</p>
+              <dl class="qr-fields qr-fields--audit">
+                <div>
+                  <dt>Creado por</dt>
+                  <dd>{{ creatorLabel(selected()!) }}</dd>
+                </div>
+                <div>
+                  <dt>Fecha de creación</dt>
+                  <dd>{{ createdAt(selected()!) }}</dd>
+                </div>
+                <div>
+                  <dt>Editado por</dt>
+                  <dd>{{ editorLabel(selected()!) }}</dd>
+                </div>
+                <div>
+                  <dt>Última edición</dt>
+                  <dd>{{ editedAt(selected()!) }}</dd>
+                </div>
+              </dl>
+            </section>
+          </div>
+        </div>
+      }
+    </article>
+  </div>
+
+  @if (dialog(); as kind) {
+    <div
+      class="qr-dialog-overlay"
+      role="presentation"
+      (click)="closeDialog()"
+    >
+      <div
+        class="qr-dialog-panel"
+        role="dialog"
+        [attr.aria-modal]="true"
+        [attr.aria-labelledby]="kind === 'edit' ? 'qr-edit-title' : 'qr-delete-title'"
+        (click)="$event.stopPropagation()"
+      >
+        @if (kind === 'edit') {
+          <header class="qr-dialog-head">
+            <div>
+              <p class="kicker">Edición</p>
+              <h2 id="qr-edit-title" class="title">Editar código QR</h2>
+            </div>
+            <button
+              type="button"
+              class="icon-btn"
+              appMotionButton
+              aria-label="Cerrar"
+              [disabled]="actionBusy()"
+              (click)="closeDialog()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="m7 7 10 10M17 7 7 17" />
+              </svg>
+            </button>
+          </header>
+
+          <form class="qr-dialog-form" [formGroup]="editForm" (ngSubmit)="saveEdit()" novalidate>
+            <div class="qr-field">
+              <label class="qr-field-label" for="qr-edit-nombre">Nombre</label>
+              <div class="qr-field-control" appMotionInput>
+                <input id="qr-edit-nombre" type="text" formControlName="nombre" autocomplete="off" />
+              </div>
+              @if (editForm.controls.nombre.touched && editForm.controls.nombre.invalid) {
+                <p class="qr-field-error" role="alert">El nombre es obligatorio.</p>
+              }
+            </div>
+
+            <div class="qr-field">
+              <label class="qr-field-label" for="qr-edit-tipo">Tipo</label>
+              <div class="qr-field-control">
+                <select id="qr-edit-tipo" formControlName="tipo">
+                  @for (option of typeOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            @if (editTipo() === 'url') {
+              <div class="qr-field">
+                <label class="qr-field-label" for="qr-edit-url">URL de destino</label>
+                <div class="qr-field-control" appMotionInput>
+                  <input
+                    id="qr-edit-url"
+                    type="url"
+                    formControlName="destinoUrl"
+                    placeholder="https://"
+                    autocomplete="off"
+                  />
+                </div>
+              </div>
+            } @else {
+              <div class="qr-field">
+                <label class="qr-field-label" for="qr-edit-contenido">Contenido</label>
+                <div class="qr-field-control" appMotionInput>
+                  <textarea id="qr-edit-contenido" rows="4" formControlName="contenido"></textarea>
+                </div>
+              </div>
+            }
+
+            <fieldset class="qr-style-fields">
+              <legend>Estilo visual</legend>
+              <app-qr-style-picker
+                [value]="editStyleValue()"
+                [disabled]="actionBusy()"
+                (valueChange)="onEditStyleChange($event)"
+              />
+            </fieldset>
+
+            @if (actionError()) {
+              <p class="qr-action-error" role="alert">{{ actionError() }}</p>
+            }
+
+            <div class="qr-dialog-actions">
+              <button type="button" class="qr-retry" appMotionButton [disabled]="actionBusy()" (click)="closeDialog()">
+                Cancelar
+              </button>
+              <button type="submit" class="qr-cta" appMotionButton [disabled]="actionBusy()">
+                {{ actionBusy() ? 'Guardando…' : 'Guardar cambios' }}
+              </button>
+            </div>
+          </form>
+        } @else {
+          @if (selected(); as record) {
+          <header class="qr-dialog-head">
+            <div>
+              <p class="kicker">Estado</p>
+              <h2 id="qr-delete-title" class="title">
+                {{ record.activo ? 'Desactivar código QR' : 'Reactivar código QR' }}
+              </h2>
+            </div>
+            <button
+              type="button"
+              class="icon-btn"
+              appMotionButton
+              aria-label="Cerrar"
+              [disabled]="actionBusy()"
+              (click)="closeDialog()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="m7 7 10 10M17 7 7 17" />
+              </svg>
+            </button>
+          </header>
+
+          <p class="qr-dialog-copy">
+            @if (record.activo) {
+              {{ displayName(record) }} se marcará como inactivo. El código no se elimina y podrás reactivarlo después.
+            } @else {
+              {{ displayName(record) }} volverá a quedar activo y disponible.
+            }
+          </p>
+
+          @if (actionError()) {
+            <p class="qr-action-error" role="alert">{{ actionError() }}</p>
+          }
+
+          <div class="qr-dialog-actions">
+            <button type="button" class="qr-retry" appMotionButton [disabled]="actionBusy()" (click)="closeDialog()">
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="qr-cta"
+              [class.is-danger]="record.activo"
+              appMotionButton
+              [disabled]="actionBusy()"
+              (click)="confirmDelete()"
+            >
+              @if (actionBusy()) {
+                Actualizando…
+              } @else {
+                {{ record.activo ? 'Desactivar' : 'Reactivar' }}
+              }
+            </button>
+          </div>
+          }
+        }
+      </div>
+    </div>
+  }
+}
+</div>
+}

@@ -1,6 +1,7 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MotionButtonDirective, MotionCardDirective, MotionListDirective } from '../../../motion/motion.directives';
+import { formatQrDay, qrTypeLabel } from '../../qr/qr-format';
 import { QrResponse, parseQrFecha } from '../../qr/qr-response';
 import { QrService } from '../../service/qr.service';
 
@@ -11,15 +12,6 @@ export interface DashboardQrRecord {
   type: string;
   status: 'Activo' | 'Inactivo';
 }
-
-const TYPE_LABELS: Record<string, string> = {
-  url: 'URL',
-  texto: 'Texto',
-  wifi: 'Wi-Fi',
-  vcard: 'vCard',
-  email: 'Email',
-  telefono: 'Teléfono',
-};
 
 const LATEST_LIMIT = 6;
 
@@ -69,16 +61,11 @@ export class DashboardRecordsCardComponent {
   }
 
   private toRow(record: QrResponse): DashboardQrRecord {
-    const created = parseQrFecha(record.fechaCreacion);
-    const typeKey = (record.tipo || '').toLowerCase();
-
     return {
       id: record.qrId != null ? `QR-${String(record.qrId).padStart(3, '0')}` : 'QR-000',
       name: record.nombre?.trim() || 'Sin nombre',
-      created: created
-        ? created.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
-        : 'Sin fecha',
-      type: TYPE_LABELS[typeKey] ?? record.tipo ?? '—',
+      created: formatQrDay(record.fechaCreacion),
+      type: qrTypeLabel(record.tipo),
       status: record.activo ? 'Activo' : 'Inactivo',
     };
   }
