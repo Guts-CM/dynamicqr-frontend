@@ -46,7 +46,7 @@ import {
 } from '../usuario-format';
 import { UsuarioResponse } from '../usuario-response';
 
-type UsuarioDialog = 'edit' | 'delete' | null;
+type UsuarioDialog = 'edit' | 'delete' | 'password' | null;
 
 @Component({
   selector: 'app-usuario',
@@ -108,11 +108,13 @@ export class UsuarioComponent {
   protected readonly dialog = signal<UsuarioDialog>(null);
   protected readonly actionBusy = signal(false);
   protected readonly actionError = signal<string | null>(null);
+  protected readonly tempPassword = signal<string | null>(null);
+  protected readonly copiedTemp = signal(false);
 
   protected readonly editForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     nombre: ['', Validators.required],
-    apellidoPaterno: ['', Validators.required],
+    apellidoPaterno: [''],
     apellidoMaterno: [''],
   });
 
@@ -517,6 +519,17 @@ export class UsuarioComponent {
     this.showDialog('delete');
   }
 
+  protected openPassword(): void {
+    if (!this.selected() || this.actionBusy()) {
+      return;
+    }
+
+    this.tempPassword.set(null);
+    this.copiedTemp.set(false);
+    this.actionError.set(null);
+    this.showDialog('password');
+  }
+
   protected closeDialog(): void {
     if (this.actionBusy()) {
       return;
@@ -524,7 +537,11 @@ export class UsuarioComponent {
 
     this.playDialog(false);
     window.clearTimeout(this.dialogTimer);
-    this.dialogTimer = window.setTimeout(() => this.dialog.set(null), MOTION.duration.component);
+    this.dialogTimer = window.setTimeout(() => {
+      this.dialog.set(null);
+      this.tempPassword.set(null);
+      this.copiedTemp.set(false);
+    }, MOTION.duration.component);
   }
 
   protected saveEdit(): void {
@@ -552,7 +569,7 @@ export class UsuarioComponent {
       .update(id, {
         email,
         nombre: value.nombre.trim(),
-        apellidoPaterno: value.apellidoPaterno.trim(),
+        apellidoPaterno: value.apellidoPaterno.trim() || null,
         apellidoMaterno: value.apellidoMaterno.trim() || null,
       })
       .pipe(
@@ -598,6 +615,45 @@ export class UsuarioComponent {
           this.actionError.set('No se pudo actualizar el usuario.');
         },
       });
+  }
+
+  protected confirmPasswordTemporal(): void {
+    const id = this.selectedId();
+    if (id == null || this.actionBusy()) {
+      return;
+    }
+
+    this.actionBusy.set(true);
+    this.actionError.set(null);
+    this.copiedTemp.set(false);
+
+    this.usuarioService
+      .generarPasswordTemporal(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (password) => {
+          this.tempPassword.set(password);
+          this.actionBusy.set(false);
+        },
+        error: () => {
+          this.actionBusy.set(false);
+          this.actionError.set('No se pudo generar la contraseña temporal.');
+        },
+      });
+  }
+
+  protected copyTempPassword(trigger: EventTarget | null): void {
+    const password = this.tempPassword();
+    if (!password || typeof navigator === 'undefined' || !navigator.clipboard) {
+      return;
+    }
+
+    void navigator.clipboard.writeText(password).then(() => {
+      this.copiedTemp.set(true);
+      pulseElement(trigger instanceof Element ? trigger : null);
+      window.clearTimeout(this.copiedTimer);
+      this.copiedTimer = window.setTimeout(() => this.copiedTemp.set(false), 1600);
+    });
   }
 
   private patchEditForm(record: UsuarioResponse): void {

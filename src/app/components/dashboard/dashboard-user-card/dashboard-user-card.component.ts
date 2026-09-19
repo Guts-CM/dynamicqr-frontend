@@ -3,6 +3,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 import { MotionButtonDirective, MotionCardDirective } from '../../../motion/motion.directives';
 import { AuthService } from '../../service/auth.service';
+import { UsuarioService } from '../../service/usuario.service';
+import { formatUsuarioIniciales, formatUsuarioNombre } from '../../usuario/usuario-format';
+import { UsuarioResponse } from '../../usuario/usuario-response';
 
 @Component({
   selector: 'app-dashboard-user-card',
@@ -12,22 +15,25 @@ import { AuthService } from '../../service/auth.service';
 })
 export class DashboardUserCardComponent {
   private readonly authService = inject(AuthService);
+  private readonly usuarioService = inject(UsuarioService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly now = signal(Date.now());
+  private readonly usuario = signal<UsuarioResponse | null>(null);
   private expiredNotified = false;
 
   protected readonly logout = output<void>();
 
   protected readonly profile = computed(() => {
     const session = this.authService.session();
-    const email = session?.email || '';
-    const localPart = email.includes('@') ? email.slice(0, email.indexOf('@')) : email;
-    const name = localPart ? this.toDisplayName(localPart) : 'Usuario';
+    const record = this.usuario();
+    const email = record?.email?.trim() || session?.email?.trim() || 'Sin correo';
+    const name = record ? formatUsuarioNombre(record) : 'Usuario';
+    const displayName = !record || name === email ? 'Usuario' : name;
 
     return {
-      name,
-      email: email || 'Sin correo',
-      initials: this.toInitials(name),
+      name: displayName,
+      email,
+      initials: record ? formatUsuarioIniciales(record) : this.toInitials(displayName),
       userId: session?.usuarioId != null ? `USR-${String(session.usuarioId).padStart(3, '0')}` : 'USR-000',
       role: 'Administrador',
     };
@@ -59,6 +65,17 @@ export class DashboardUserCardComponent {
   });
 
   constructor() {
+    const usuarioId = this.authService.session()?.usuarioId;
+    if (usuarioId != null) {
+      this.usuarioService
+        .findById(usuarioId)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (record) => this.usuario.set(record),
+          error: () => this.usuario.set(null),
+        });
+    }
+
     interval(1000)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
@@ -69,10 +86,6 @@ export class DashboardUserCardComponent {
           this.logout.emit();
         }
       });
-  }
-
-  private toDisplayName(value: string): string {
-    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
   private toInitials(name: string): string {

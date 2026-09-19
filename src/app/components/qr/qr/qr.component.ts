@@ -449,6 +449,7 @@ export class QrComponent {
 
           this.records.set(this.sortRecords(records));
           this.loading.set(false);
+          this.applyQuerySelection();
           this.queueListMotion();
         },
         error: () => {
@@ -461,6 +462,23 @@ export class QrComponent {
           this.loading.set(false);
         },
       });
+  }
+
+  private applyQuerySelection(): void {
+    if (this.route.snapshot.queryParamMap.get('create') === '1') {
+      return;
+    }
+
+    const raw = this.route.snapshot.queryParamMap.get('id');
+    const id = raw ? Number(raw) : Number.NaN;
+    if (!Number.isInteger(id)) {
+      return;
+    }
+
+    const record = this.records().find((item) => item.qrId === id);
+    if (record) {
+      this.selectQr(record);
+    }
   }
 
   protected selectQr(record: QrResponse): void {

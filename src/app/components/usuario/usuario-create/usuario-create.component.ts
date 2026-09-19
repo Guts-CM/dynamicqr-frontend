@@ -28,7 +28,7 @@ export class UsuarioCreateComponent {
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     nombre: ['', Validators.required],
-    apellidoPaterno: ['', Validators.required],
+    apellidoPaterno: [''],
     apellidoMaterno: [''],
   });
 
@@ -55,7 +55,7 @@ export class UsuarioCreateComponent {
     });
   }
 
-  protected invalid(name: 'email' | 'nombre' | 'apellidoPaterno'): boolean {
+  protected invalid(name: 'email' | 'nombre'): boolean {
     const control = this.form.controls[name];
     return this.submitted() && control.invalid;
   }
@@ -76,7 +76,7 @@ export class UsuarioCreateComponent {
     this.save.emit({
       email: value.email.trim(),
       nombre: value.nombre.trim(),
-      apellidoPaterno: value.apellidoPaterno.trim(),
+      apellidoPaterno: value.apellidoPaterno.trim() || null,
       apellidoMaterno: value.apellidoMaterno.trim() || null,
     });
   }

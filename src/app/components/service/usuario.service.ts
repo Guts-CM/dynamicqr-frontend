@@ -7,14 +7,14 @@ import { UsuarioResponse } from '../usuario/usuario-response';
 export type UsuarioCreatePayload = {
   email: string;
   nombre: string;
-  apellidoPaterno: string;
+  apellidoPaterno?: string | null;
   apellidoMaterno?: string | null;
 };
 
 export type UsuarioUpdatePayload = {
   email?: string;
   nombre?: string;
-  apellidoPaterno?: string;
+  apellidoPaterno?: string | null;
   apellidoMaterno?: string | null;
 };
 
@@ -45,5 +45,11 @@ export class UsuarioService {
 
   toggleActivo(id: number): Observable<void> {
     return this.http.delete(`${this.base}/${id}`, { responseType: 'text' }).pipe(map(() => undefined));
+  }
+
+  generarPasswordTemporal(id: number): Observable<string> {
+    return this.http
+      .post<{ passwordTemporal: string }>(`${this.base}/${id}/password-temporal`, {})
+      .pipe(map((response) => response.passwordTemporal));
   }
 }

@@ -28,10 +28,15 @@
   font-size: 0.88rem;
 }
 
+.record-list > li {
+  margin: 0;
+  padding: 0;
+}
+
 .table-head,
 .record {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) 0.9fr 0.7fr 0.8fr 2.1rem;
+  grid-template-columns: minmax(0, 1.7fr) 0.9fr 0.7fr 0.8fr;
   gap: 0.75rem;
   align-items: center;
 }
@@ -53,16 +58,33 @@
 }
 
 .record {
+  width: 100%;
   min-height: 3.35rem;
+  margin: 0;
   padding: 0.55rem 0.35rem;
+  border: 0;
   border-top: 1px solid color-mix(in srgb, var(--color-limed-spruce-400) 12%, transparent);
   border-radius: 0.9rem;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
   transition: background-color 180ms ease;
 }
 
 .record:hover,
-.record:focus-within {
+.record:focus-visible {
   background: color-mix(in srgb, var(--color-limed-spruce-50) 4%, transparent);
+}
+
+.record:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.record:disabled {
+  cursor: default;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -136,16 +158,15 @@
   }
 
   .record {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      "name status menu"
-      "meta meta menu";
+      "name status"
+      "meta meta";
     row-gap: 0.35rem;
   }
 
   .record-name { grid-area: name; }
   .record-status { grid-area: status; justify-self: end; }
-  .record-menu { grid-area: menu; }
   .record-date {
     grid-area: meta;
     padding-left: 3.1rem;

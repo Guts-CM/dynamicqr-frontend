@@ -9,7 +9,7 @@
     <header class="navbar" data-motion-init>
       <a class="brand" href="/dashboard" appMotionButton (click)="$event.preventDefault(); goDashboard()">
         <span class="brand-mark" aria-hidden="true">
-          <i></i><i></i><i></i>
+          <img src="assets/dynamicqr-logo.svg" alt="" />
         </span>
         <span class="brand-name">DynamicQR</span>
       </a>
@@ -202,7 +202,12 @@
                   (click)="selectUser(record)"
                 >
                   <span class="qr-item-id">{{ codeId(record) }}</span>
-                  <span class="qr-item-name">{{ displayName(record) }}</span>
+                  <span class="user-item-head">
+                    <span class="qr-item-name">{{ displayName(record) }}</span>
+                    @if (record.activo === false) {
+                      <span class="user-idle-tag">Inactivo</span>
+                    }
+                  </span>
                   <span class="qr-item-date">{{ record.email }} · Creado {{ createdLabel(record) }}</span>
                 </button>
               </li>
@@ -261,6 +266,21 @@
               </button>
               <button
                 type="button"
+                class="icon-btn"
+                appMotionButton
+                aria-label="Generar contraseña temporal"
+                [disabled]="actionBusy()"
+                (click)="openPassword()"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <circle cx="8" cy="15" r="3.2" />
+                  <path d="M10.4 13.2 18.5 5.1" />
+                  <path d="M16.2 5.1h2.3v2.3" />
+                  <path d="M14.6 8.5h2.2" />
+                </svg>
+              </button>
+              <button
+                type="button"
                 class="icon-btn is-danger"
                 appMotionButton
                 [attr.aria-label]="selected()!.activo === false ? 'Reactivar usuario' : 'Eliminar usuario'"
@@ -292,7 +312,7 @@
                   </div>
                   <div>
                     <dt>Apellido paterno</dt>
-                    <dd>{{ selected()!.apellidoPaterno.trim() || '—' }}</dd>
+                    <dd>{{ selected()!.apellidoPaterno?.trim() || '—' }}</dd>
                   </div>
                   <div>
                     <dt>Apellido materno</dt>
@@ -364,7 +384,7 @@
         class="qr-dialog-panel"
         role="dialog"
         [attr.aria-modal]="true"
-        [attr.aria-labelledby]="kind === 'edit' ? 'user-edit-title' : 'user-delete-title'"
+        [attr.aria-labelledby]="kind === 'edit' ? 'user-edit-title' : kind === 'password' ? 'user-password-title' : 'user-delete-title'"
         (click)="$event.stopPropagation()"
       >
         @if (kind === 'edit') {
@@ -403,9 +423,6 @@
               <div class="qr-field-control" appMotionInput>
                 <input id="user-edit-paterno" type="text" formControlName="apellidoPaterno" autocomplete="family-name" />
               </div>
-              @if (editForm.controls.apellidoPaterno.touched && editForm.controls.apellidoPaterno.invalid) {
-                <p class="qr-field-error" role="alert">El apellido paterno es obligatorio.</p>
-              }
             </div>
 
             <div class="qr-field">
@@ -438,6 +455,77 @@
               </button>
             </div>
           </form>
+        } @else if (kind === 'password') {
+          @if (selected(); as record) {
+          <header class="qr-dialog-head">
+            <div>
+              <p class="kicker">Acceso</p>
+              <h2 id="user-password-title" class="title">Contraseña temporal</h2>
+            </div>
+            <button
+              type="button"
+              class="icon-btn"
+              appMotionButton
+              aria-label="Cerrar"
+              [disabled]="actionBusy()"
+              (click)="closeDialog()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="m7 7 10 10M17 7 7 17" />
+              </svg>
+            </button>
+          </header>
+
+          @if (tempPassword(); as secret) {
+            <p class="qr-dialog-copy">
+              Comparte esta contraseña con {{ displayName(record) }}. Al iniciar sesión se le pedirá crear una nueva.
+            </p>
+            <div class="user-temp-secret">
+              <span class="user-temp-value">{{ secret }}</span>
+              <button
+                type="button"
+                class="icon-btn"
+                appMotionButton="copy"
+                [attr.aria-label]="copiedTemp() ? 'Contraseña copiada' : 'Copiar contraseña temporal'"
+                (click)="copyTempPassword($event.currentTarget)"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  @if (copiedTemp()) {
+                    <path d="m6.8 12.2 3.1 3.1 7.3-7.4" />
+                  } @else {
+                    <rect x="8.2" y="8.2" width="10" height="10" rx="1.6" />
+                    <path d="M6.4 15.2H5.8A1.8 1.8 0 0 1 4 13.4V5.8A1.8 1.8 0 0 1 5.8 4h7.6A1.8 1.8 0 0 1 15.2 5.8v.6" />
+                  }
+                </svg>
+              </button>
+            </div>
+          } @else {
+            <p class="qr-dialog-copy">
+              Se reemplazará la contraseña actual de {{ displayName(record) }} por una temporal. La anterior dejará de funcionar.
+            </p>
+          }
+
+          @if (actionError()) {
+            <p class="qr-action-error" role="alert">{{ actionError() }}</p>
+          }
+
+          <div class="qr-dialog-actions">
+            <button type="button" class="qr-retry" appMotionButton [disabled]="actionBusy()" (click)="closeDialog()">
+              {{ tempPassword() ? 'Cerrar' : 'Cancelar' }}
+            </button>
+            @if (!tempPassword()) {
+              <button
+                type="button"
+                class="qr-cta"
+                appMotionButton
+                [disabled]="actionBusy()"
+                (click)="confirmPasswordTemporal()"
+              >
+                {{ actionBusy() ? 'Generando…' : 'Generar contraseña' }}
+              </button>
+            }
+          </div>
+          }
         } @else {
           @if (selected(); as record) {
           <header class="qr-dialog-head">

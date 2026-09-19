@@ -33,12 +33,9 @@
 
           <div class="qr-field">
             <label class="qr-field-label" for="user-create-paterno">Apellido paterno</label>
-            <div class="qr-field-control" [class.is-invalid]="invalid('apellidoPaterno')" appMotionInput>
+            <div class="qr-field-control" appMotionInput>
               <input id="user-create-paterno" type="text" formControlName="apellidoPaterno" autocomplete="family-name" />
             </div>
-            @if (invalid('apellidoPaterno')) {
-              <p class="qr-field-error" role="alert">El apellido paterno es obligatorio.</p>
-            }
           </div>
 
           <div class="qr-field">

@@ -19,7 +19,8 @@ export function formatUsuarioNombre(record: UsuarioResponse | null | undefined):
 
 export function formatUsuarioIniciales(record: UsuarioResponse | null | undefined): string {
   const nombre = record?.nombre?.trim().charAt(0) ?? '';
-  const apellido = record?.apellidoPaterno?.trim().charAt(0) ?? '';
+  const apellido =
+    record?.apellidoPaterno?.trim().charAt(0) || record?.apellidoMaterno?.trim().charAt(0) || '';
   const initials = `${nombre}${apellido}`.toUpperCase();
   return initials || record?.email?.trim().charAt(0).toUpperCase() || '?';
 }

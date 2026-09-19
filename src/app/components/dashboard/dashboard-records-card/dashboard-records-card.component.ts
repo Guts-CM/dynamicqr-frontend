@@ -1,11 +1,13 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MotionButtonDirective, MotionCardDirective, MotionListDirective } from '../../../motion/motion.directives';
+import { Router } from '@angular/router';
+import { MotionCardDirective, MotionListDirective } from '../../../motion/motion.directives';
 import { formatQrDay, qrTypeLabel } from '../../qr/qr-format';
 import { QrResponse, parseQrFecha } from '../../qr/qr-response';
 import { QrService } from '../../qr/qr.service';
 
 export interface DashboardQrRecord {
+  qrId: number | null;
   id: string;
   name: string;
   created: string;
@@ -17,12 +19,13 @@ const LATEST_LIMIT = 6;
 
 @Component({
   selector: 'app-dashboard-records-card',
-  imports: [MotionButtonDirective, MotionCardDirective, MotionListDirective],
+  imports: [MotionCardDirective, MotionListDirective],
   templateUrl: './dashboard-records-card.component.html',
   styleUrl: './dashboard-records-card.component.css',
 })
 export class DashboardRecordsCardComponent {
   private readonly qrService = inject(QrService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
@@ -31,6 +34,14 @@ export class DashboardRecordsCardComponent {
 
   constructor() {
     this.load();
+  }
+
+  protected openRecord(record: DashboardQrRecord): void {
+    if (record.qrId == null) {
+      return;
+    }
+
+    void this.router.navigateByUrl(`/qr?id=${record.qrId}`);
   }
 
   private load(): void {
@@ -62,6 +73,7 @@ export class DashboardRecordsCardComponent {
 
   private toRow(record: QrResponse): DashboardQrRecord {
     return {
+      qrId: record.qrId,
       id: record.qrId != null ? `QR-${String(record.qrId).padStart(3, '0')}` : 'QR-000',
       name: record.nombre?.trim() || 'Sin nombre',
       created: formatQrDay(record.fechaCreacion),

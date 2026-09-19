@@ -8,6 +8,8 @@ import { TokenResponse } from '../auth/token-response';
 
 const STORAGE_KEY = 'dynamicqr.auth.session';
 
+export type LoginResult = { kind: 'session'; session: AuthSession } | { kind: 'cambio' };
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -20,14 +22,40 @@ export class AuthService {
     return !!session && !session.isExpired();
   });
 
-  login(request: LoginRequest, rememberMe: boolean): Observable<AuthSession> {
+  login(request: LoginRequest, rememberMe: boolean): Observable<LoginResult> {
     return this.http
       .post<TokenResponse>(`${environment.apiBaseUrl}/api/auth/login`, {
         email: request.email,
         password: request.password,
       })
       .pipe(
-        map((response) => this.toSession(response, request.email)),
+        map((response) => {
+          if (response.requiereCambioPassword) {
+            return { kind: 'cambio' as const };
+          }
+
+          const session = this.toSession(response, request.email);
+          this.persist(session, rememberMe);
+          return { kind: 'session' as const, session };
+        }),
+        catchError((error: HttpErrorResponse) => throwError(() => this.toAuthError(error))),
+      );
+  }
+
+  cambiarPassword(
+    email: string,
+    passwordTemporal: string,
+    passwordNueva: string,
+    rememberMe: boolean,
+  ): Observable<AuthSession> {
+    return this.http
+      .post<TokenResponse>(`${environment.apiBaseUrl}/api/auth/password`, {
+        email,
+        password: passwordTemporal,
+        passwordNueva,
+      })
+      .pipe(
+        map((response) => this.toSession(response, email)),
         tap((session) => this.persist(session, rememberMe)),
         catchError((error: HttpErrorResponse) => throwError(() => this.toAuthError(error))),
       );
@@ -122,6 +150,10 @@ export class AuthService {
   }
 
   private toAuthError(error: HttpErrorResponse): Error {
+    if (error.status === 403) {
+      return new Error('Esta cuenta está desactivada');
+    }
+
     if (error.status === 401) {
       return new Error('Credenciales inválidas');
     }
