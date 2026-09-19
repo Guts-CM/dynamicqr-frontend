@@ -1,1 +1,3 @@
-<router-outlet />
+<div class="app-stage" #stage>
+  <router-outlet (activate)="onOutletActivate()" />
+</div>

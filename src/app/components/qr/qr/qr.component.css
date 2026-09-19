@@ -1,0 +1,7 @@
+@import "../../dashboard/dashboard.component.css";
+@import "../../dashboard/dashboard-card.css";
+@import "../qr-workspace.css";
+
+:host.is-switching {
+  pointer-events: none;
+}

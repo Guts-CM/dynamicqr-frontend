@@ -1,0 +1,34 @@
+@import "../../qr/qr-create/qr-create.component.css";
+
+.user-identity {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  min-height: 13.5rem;
+  padding: 1.5rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-300) 14%, transparent);
+  border-radius: 1.2rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent);
+  text-align: center;
+}
+
+.user-avatar {
+  display: grid;
+  place-items: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  font-size: 1.28rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.user-identity-name {
+  margin: 0;
+  max-width: 16rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-limed-spruce-50);
+}

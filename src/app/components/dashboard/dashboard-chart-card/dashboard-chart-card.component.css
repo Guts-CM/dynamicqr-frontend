@@ -1,0 +1,145 @@
+@import "../dashboard-card.css";
+
+.chart-card {
+  min-height: 22rem;
+}
+
+.badge {
+  height: 1.7rem;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+}
+
+.chart-status {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 14.5rem;
+  margin: 0;
+  color: var(--color-limed-spruce-400);
+  font-size: 0.88rem;
+}
+
+.chart {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 0.55rem;
+  flex: 1;
+  min-height: 14.5rem;
+}
+
+.chart-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.35rem 0 1.55rem;
+  font-size: 0.66rem;
+  color: var(--color-limed-spruce-500);
+  text-align: right;
+}
+
+.chart-plot {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0.55rem;
+  padding: 0.2rem 0.15rem 0;
+  background-image: repeating-linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-limed-spruce-400) 12%, transparent) 0 1px,
+    transparent 1px 25%
+  );
+  background-origin: content-box;
+}
+
+.chart-col {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+}
+
+.chart-bar-slot {
+  display: grid;
+  grid-template-rows: 1.85rem minmax(9.5rem, 1fr);
+  justify-items: center;
+  min-height: 11.5rem;
+  row-gap: 0.2rem;
+}
+
+.chart-track {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-bar {
+  width: min(100%, 2.35rem);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-limed-spruce-500) 42%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-limed-spruce-50) 18%, transparent);
+  transform-origin: center bottom;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chart-bar[data-motion-bar] {
+    transform: scaleY(0);
+  }
+}
+
+.chart-bar.is-current {
+  background: var(--color-accent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.chart-tip {
+  display: inline-flex;
+  align-items: center;
+  height: 1.3rem;
+  padding: 0 0.42rem;
+  border-radius: 999px;
+  background: var(--color-limed-spruce-900);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+  color: var(--color-accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.chart-tip.is-hidden {
+  visibility: hidden;
+}
+
+.chart-label {
+  margin-top: 0.55rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-limed-spruce-400);
+}
+
+.chart-col:has(.is-current) .chart-label {
+  color: var(--color-accent);
+}
+
+@media (max-width: 639px) {
+  .chart-bar-slot {
+    min-height: 9.5rem;
+  }
+
+  .chart-plot {
+    gap: 0.35rem;
+  }
+}

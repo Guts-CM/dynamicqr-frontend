@@ -1,0 +1,140 @@
+@import "../../dashboard/dashboard.component.css";
+@import "../../dashboard/dashboard-card.css";
+@import "../../qr/qr-workspace.css";
+
+:host.is-switching {
+  pointer-events: none;
+}
+
+.user-search {
+  margin: 0 0 0.85rem;
+}
+
+.user-search-skel {
+  width: 100%;
+  height: 2.65rem;
+  margin-bottom: 0.85rem;
+  border-radius: 0.9rem;
+}
+
+.user-empty-filter {
+  min-height: 12rem;
+  padding: 1.4rem 0.4rem;
+}
+
+.user-identity {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  min-height: 13.5rem;
+  padding: 1.5rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-300) 14%, transparent);
+  border-radius: 1.2rem;
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 28%, transparent);
+  text-align: center;
+}
+
+.user-avatar {
+  display: grid;
+  place-items: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  font-size: 1.28rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.user-identity-name {
+  margin: 0;
+  max-width: 16rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-limed-spruce-50);
+}
+
+.user-email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-limed-spruce-200);
+  font-size: 0.84rem;
+}
+
+.user-identity .qr-url-row {
+  width: 100%;
+  justify-content: center;
+}
+
+.user-item-head {
+  display: flex;
+  align-items: center;
+  gap: 0.48rem;
+  min-width: 0;
+}
+
+.user-item-head .qr-item-name {
+  min-width: 0;
+}
+
+.user-idle-tag {
+  flex: none;
+  padding: 0.14rem 0.46rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-limed-spruce-400) 34%, transparent);
+  background: color-mix(in srgb, var(--color-limed-spruce-800) 62%, transparent);
+  color: var(--color-limed-spruce-200);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.qr-item.is-idle {
+  opacity: 1;
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 58%, #1a2228 42%);
+  border-color: color-mix(in srgb, var(--color-limed-spruce-500) 26%, transparent);
+}
+
+.qr-item.is-idle .qr-item-id,
+.qr-item.is-idle .qr-item-name,
+.qr-item.is-idle .qr-item-date {
+  color: color-mix(in srgb, var(--color-limed-spruce-300) 88%, transparent);
+}
+
+.qr-item.is-idle:hover,
+.qr-item.is-idle:focus-visible {
+  background: color-mix(in srgb, var(--color-limed-spruce-800) 42%, transparent);
+  border-color: color-mix(in srgb, var(--color-limed-spruce-400) 30%, transparent);
+}
+
+.qr-item.is-idle.is-selected {
+  opacity: 1;
+  background: color-mix(in srgb, var(--color-limed-spruce-700) 34%, transparent);
+  border-color: color-mix(in srgb, var(--color-limed-spruce-400) 38%, transparent);
+  box-shadow: inset 3px 0 0 var(--color-limed-spruce-400);
+}
+
+.user-temp-secret {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.15rem 0 0.35rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--color-limed-spruce-950) 42%, transparent);
+}
+
+.user-temp-value {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-limed-spruce-50);
+}

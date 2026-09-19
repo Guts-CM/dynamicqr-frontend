@@ -1,0 +1,178 @@
+<article class="card qr-create-card" appMotionCard>
+  <header class="card-head qr-create-head" data-qr-workspace>
+    <button type="button" class="qr-back is-visible" appMotionButton="back" [disabled]="busy() || success()" (click)="onCancel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M15 6.5 9.5 12 15 17.5" />
+      </svg>
+      Códigos
+    </button>
+    <div>
+      <p class="kicker">Creación</p>
+      <h2 class="title">Nuevo código QR</h2>
+    </div>
+    <span class="status-chip">
+      <i aria-hidden="true"></i>
+      Se creará activo
+    </span>
+  </header>
+
+  <form class="qr-create-body" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="qr-create-layout">
+      <div class="qr-create-fields" data-qr-workspace>
+        <section class="qr-group">
+          <p class="kicker">Información general</p>
+          <div class="qr-field">
+            <label class="qr-field-label" for="qr-create-nombre">Nombre</label>
+            <div class="qr-field-control" [class.is-invalid]="invalid('nombre')" appMotionInput>
+              <input id="qr-create-nombre" type="text" formControlName="nombre" autocomplete="off" />
+            </div>
+            @if (invalid('nombre')) {
+              <p class="qr-field-error" role="alert">El nombre es obligatorio.</p>
+            }
+          </div>
+
+          <div class="qr-field">
+            <label class="qr-field-label" for="qr-create-tipo">Tipo</label>
+            <div class="qr-field-control">
+              <select id="qr-create-tipo" formControlName="tipo">
+                @for (option of typeOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          @if (tipo() === 'url') {
+            <div class="qr-field">
+              <label class="qr-field-label" for="qr-create-url">URL de destino</label>
+              <div class="qr-field-control" [class.is-invalid]="invalid('destinoUrl')" appMotionInput>
+                <input
+                  id="qr-create-url"
+                  type="url"
+                  formControlName="destinoUrl"
+                  placeholder="https://"
+                  autocomplete="off"
+                />
+              </div>
+              @if (invalid('destinoUrl')) {
+                <p class="qr-field-error" role="alert">La URL de destino debe comenzar con http:// o https://.</p>
+              }
+            </div>
+          } @else {
+            <div class="qr-field">
+              <label class="qr-field-label" for="qr-create-contenido">Contenido</label>
+              <div class="qr-field-control" [class.is-invalid]="invalid('contenido')" appMotionInput>
+                <textarea id="qr-create-contenido" rows="4" formControlName="contenido"></textarea>
+              </div>
+              @if (invalid('contenido')) {
+                <p class="qr-field-error" role="alert">El contenido es obligatorio para este tipo de código.</p>
+              }
+            </div>
+          }
+        </section>
+
+        <fieldset class="qr-style-fields">
+          <legend>Estilo visual</legend>
+          <app-qr-style-picker
+            [value]="styleValue()"
+            [disabled]="busy() || success()"
+            (valueChange)="onStyleChange($event)"
+          />
+        </fieldset>
+      </div>
+
+      <section class="qr-preview qr-create-preview" data-qr-workspace>
+        <p class="kicker">Vista previa de estilo</p>
+        <div
+          class="qr-preview-frame"
+          [class.is-clear]="preview().transparent"
+          [style.background]="preview().transparent ? null : preview().colorFondo"
+        >
+          <svg class="qr-style-svg" [attr.viewBox]="'-0.55 -0.55 ' + (previewSize + 1.1) + ' ' + (previewSize + 1.1)" aria-hidden="true">
+            <defs>
+              <linearGradient [attr.id]="gradientId" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" [attr.stop-color]="preview().colorModulos" />
+                <stop offset="100%" [attr.stop-color]="preview().colorGradiente" />
+              </linearGradient>
+            </defs>
+            @for (module of modules; track module.id) {
+              @if (preview().circleModules) {
+                <circle
+                  [attr.cx]="module.x + 0.5"
+                  [attr.cy]="module.y + 0.5"
+                  r="0.38"
+                  [attr.fill]="'url(#' + gradientId + ')'"
+                />
+              } @else if (preview().diamondModules) {
+                <polygon
+                  [attr.points]="modulePoints(module.x, module.y)"
+                  [attr.fill]="'url(#' + gradientId + ')'"
+                />
+              } @else {
+                <rect
+                  [attr.x]="module.x + 0.1"
+                  [attr.y]="module.y + 0.1"
+                  width="0.8"
+                  height="0.8"
+                  [attr.rx]="preview().moduleRadius"
+                  [attr.fill]="'url(#' + gradientId + ')'"
+                />
+              }
+            }
+            @for (finder of preview().finders; track finder.id) {
+              <path
+                fill-rule="evenodd"
+                [attr.d]="finder.ring"
+                [attr.fill]="preview().colorModulos"
+              />
+              @if (preview().circleEyes) {
+                <circle
+                  [attr.cx]="finder.x + 3.5"
+                  [attr.cy]="finder.y + 3.5"
+                  r="1.5"
+                  [attr.fill]="preview().colorModulos"
+                />
+              } @else {
+                <rect
+                  [attr.x]="finder.x + 2"
+                  [attr.y]="finder.y + 2"
+                  width="3"
+                  height="3"
+                  [attr.rx]="finder.pupilRx"
+                  [attr.fill]="preview().colorModulos"
+                />
+              }
+            }
+          </svg>
+        </div>
+        <p class="qr-preview-caption">
+          {{ preview().nombre }} · {{ preview().typeLabel }} · {{ preview().moduleLabel }} / {{ preview().eyeLabel }}
+        </p>
+        <p class="qr-muted">El código definitivo se genera al crear el registro.</p>
+      </section>
+    </div>
+
+    @if (error()) {
+      <p class="qr-action-error" role="alert">{{ error() }}</p>
+    }
+
+    @if (success()) {
+      <p class="qr-create-success" role="status">El código QR se creó correctamente.</p>
+    }
+
+    <div class="qr-dialog-actions" data-qr-workspace>
+      <button type="button" class="qr-retry" appMotionButton [disabled]="busy() || success()" (click)="onCancel()">
+        Cancelar
+      </button>
+      <button type="submit" class="qr-cta" appMotionButton [disabled]="busy() || success()">
+        @if (busy()) {
+          Creando…
+        } @else if (success()) {
+          Código creado
+        } @else {
+          Crear código QR
+        }
+      </button>
+    </div>
+  </form>
+</article>

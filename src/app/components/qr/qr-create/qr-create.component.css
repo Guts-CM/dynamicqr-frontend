@@ -1,0 +1,102 @@
+@import "../../dashboard/dashboard-card.css";
+@import "../qr-workspace.css";
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.qr-create-card {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.qr-create-head {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.qr-back.is-visible {
+  display: inline-flex;
+  flex-basis: auto;
+  margin: 0;
+}
+
+.qr-create-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: 1.15rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.qr-create-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 17rem);
+  grid-template-areas: "fields preview";
+  gap: 1.1rem;
+  align-items: start;
+}
+
+.qr-create-fields {
+  display: grid;
+  gap: 1.15rem;
+  min-width: 0;
+  grid-area: fields;
+}
+
+.qr-create-preview {
+  grid-area: preview;
+  position: sticky;
+  top: 0;
+}
+
+.qr-style-svg {
+  display: block;
+  width: min(100%, 13.5rem);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.qr-preview-caption {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-limed-spruce-200);
+}
+
+.qr-field-control.is-invalid input,
+.qr-field-control.is-invalid textarea {
+  border-color: color-mix(in srgb, #f87171 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, #f87171 14%, transparent);
+}
+
+.qr-create-success {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+@media (max-width: 1100px) {
+  .qr-create-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "fields"
+      "preview";
+  }
+
+  .qr-create-preview {
+    position: static;
+  }
+
+  .qr-preview-frame {
+    max-width: 16.5rem;
+    justify-self: center;
+    width: 100%;
+  }
+}

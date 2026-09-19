@@ -1,0 +1,48 @@
+<article class="card user-card" appMotionCard>
+  <header class="card-head">
+    <div>
+      <p class="kicker">Cuenta</p>
+      <h2 class="title">Perfil de sesión</h2>
+    </div>
+    <span class="live" [class.is-idle]="!sessionActive()" [attr.aria-label]="sessionActive() ? 'Sesión en curso' : 'Sesión expirada'">
+      <span class="live-dot" aria-hidden="true"></span>
+      {{ sessionActive() ? 'En línea' : 'Expirada' }}
+    </span>
+  </header>
+
+  <div class="card-body">
+    <div class="profile-panel">
+      <div class="profile-mark" aria-hidden="true">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+      <div class="avatar" aria-hidden="true">{{ profile().initials }}</div>
+      <div class="profile-copy">
+        <p class="profile-name">{{ profile().name }}</p>
+        <p class="profile-email">{{ profile().email }}</p>
+        <p class="profile-meta">{{ profile().role }} · {{ profile().userId }}</p>
+      </div>
+    </div>
+
+    <div class="session">
+      <div class="session-row">
+        <span>{{ sessionActive() ? 'Sesión activa' : 'Sesión expirada' }}</span>
+        <strong>{{ remainingLabel() }}</strong>
+      </div>
+      <div
+        class="session-track"
+        role="meter"
+        [attr.aria-valuenow]="remainingPercent()"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-label]="'Tiempo de sesión restante: ' + remainingLabel()"
+      >
+        <span class="session-fill" [style.width.%]="remainingPercent()"></span>
+      </div>
+      <p class="session-exp">{{ expiresLabel() }}</p>
+    </div>
+
+    <button type="button" class="sign-out" appMotionButton="logout" (click)="logout.emit()">Cerrar sesión</button>
+  </div>
+</article>

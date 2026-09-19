@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./app/motion/motion.css";
 
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource/poppins/400.css";
@@ -30,6 +31,17 @@
 @layer base {
   html {
     @apply font-sans antialiased bg-limed-spruce-950 text-limed-spruce-50;
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body,
+  app-root {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 
   h1,
@@ -39,5 +51,95 @@
   h5,
   h6 {
     @apply font-heading;
+  }
+}
+
+@layer components {
+  .app-scroll,
+  .dash .grid,
+  .qr-list-card .card-body,
+  .qr-detail-card .card-body,
+  .qr-create-body,
+  .login-page,
+  .qr-dialog-panel,
+  .nav-center {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-limed-spruce-400) 42%, transparent) transparent;
+  }
+
+  .app-scroll::-webkit-scrollbar,
+  .dash .grid::-webkit-scrollbar,
+  .qr-list-card .card-body::-webkit-scrollbar,
+  .qr-detail-card .card-body::-webkit-scrollbar,
+  .qr-create-body::-webkit-scrollbar,
+  .login-page::-webkit-scrollbar,
+  .qr-dialog-panel::-webkit-scrollbar,
+  .nav-center::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .app-scroll::-webkit-scrollbar-track,
+  .dash .grid::-webkit-scrollbar-track,
+  .qr-list-card .card-body::-webkit-scrollbar-track,
+  .qr-detail-card .card-body::-webkit-scrollbar-track,
+  .qr-create-body::-webkit-scrollbar-track,
+  .login-page::-webkit-scrollbar-track,
+  .qr-dialog-panel::-webkit-scrollbar-track,
+  .nav-center::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0.35rem 0;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb,
+  .dash .grid::-webkit-scrollbar-thumb,
+  .qr-list-card .card-body::-webkit-scrollbar-thumb,
+  .qr-detail-card .card-body::-webkit-scrollbar-thumb,
+  .qr-create-body::-webkit-scrollbar-thumb,
+  .login-page::-webkit-scrollbar-thumb,
+  .qr-dialog-panel::-webkit-scrollbar-thumb,
+  .nav-center::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-limed-spruce-400) 38%, transparent);
+    background-clip: padding-box;
+    border: 0.12rem solid transparent;
+    border-radius: 999px;
+    transition: background-color 160ms ease;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb:hover,
+  .dash .grid::-webkit-scrollbar-thumb:hover,
+  .qr-list-card .card-body::-webkit-scrollbar-thumb:hover,
+  .qr-detail-card .card-body::-webkit-scrollbar-thumb:hover,
+  .qr-create-body::-webkit-scrollbar-thumb:hover,
+  .login-page::-webkit-scrollbar-thumb:hover,
+  .qr-dialog-panel::-webkit-scrollbar-thumb:hover,
+  .nav-center::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--color-limed-spruce-300) 58%, transparent);
+    background-clip: padding-box;
+    border: 0.12rem solid transparent;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb:active,
+  .dash .grid::-webkit-scrollbar-thumb:active,
+  .qr-list-card .card-body::-webkit-scrollbar-thumb:active,
+  .qr-detail-card .card-body::-webkit-scrollbar-thumb:active,
+  .qr-create-body::-webkit-scrollbar-thumb:active,
+  .login-page::-webkit-scrollbar-thumb:active,
+  .qr-dialog-panel::-webkit-scrollbar-thumb:active,
+  .nav-center::-webkit-scrollbar-thumb:active {
+    background: color-mix(in srgb, var(--color-accent) 46%, transparent);
+    background-clip: padding-box;
+    border: 0.12rem solid transparent;
+  }
+
+  .app-scroll::-webkit-scrollbar-corner,
+  .dash .grid::-webkit-scrollbar-corner,
+  .qr-list-card .card-body::-webkit-scrollbar-corner,
+  .qr-detail-card .card-body::-webkit-scrollbar-corner,
+  .qr-create-body::-webkit-scrollbar-corner,
+  .login-page::-webkit-scrollbar-corner,
+  .qr-dialog-panel::-webkit-scrollbar-corner,
+  .nav-center::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }

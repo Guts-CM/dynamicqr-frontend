@@ -11,14 +11,14 @@ export const QR_SIZE = 21;
 export const QR_CENTER = QR_SIZE / 2;
 export const QR_PARTICLE_COUNT = 22;
 
-const FINDER_ORIGINS = [
+export const QR_FINDER_ORIGINS = [
   [0, 0],
   [QR_SIZE - 7, 0],
   [0, QR_SIZE - 7],
 ] as const;
 
 function finderOrigin(x: number, y: number): readonly [number, number] | null {
-  for (const origin of FINDER_ORIGINS) {
+  for (const origin of QR_FINDER_ORIGINS) {
     if (x >= origin[0] && x < origin[0] + 7 && y >= origin[1] && y < origin[1] + 7) {
       return origin;
     }

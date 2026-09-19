@@ -13,7 +13,7 @@ import {
   QR_PARTICLE_COUNT,
   QR_PARTICLES,
   QR_SIZE,
-} from './qr-pattern';
+} from '../qr-pattern';
 
 @Component({
   selector: 'app-qr-stage',
